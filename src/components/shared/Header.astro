@@ -1,0 +1,56 @@
+---
+import { navigation } from "@data/navigation";
+import { site } from "@data/site";
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string) {
+  if (href === "/") return currentPath === "/";
+  return currentPath === href || currentPath.startsWith(`${href}/`);
+}
+---
+
+<header class="sticky top-0 z-10 border-b-[3px] border-text-primary bg-background/95 backdrop-blur-md">
+  <nav class="mx-auto flex min-h-[78px] w-[calc(100%_-_32px)] max-w-[1120px] items-center justify-between gap-6 max-[720px]:w-[calc(100%_-_24px)]" aria-label="Navigasi utama">
+    <a class="inline-flex min-w-max items-center gap-3" href="/" aria-label={`${site.brand} beranda`}>
+      <span class="grid h-[42px] w-[42px] place-items-center rounded-card bg-accent font-black shadow-brutal-sm [border:var(--border-strong)]">w</span>
+      <span>
+        <strong class="block text-base">{site.brand}</strong>
+        <small class="block text-[0.78rem] text-text-secondary max-[520px]:hidden">{site.owner}</small>
+      </span>
+    </a>
+
+    <div class="flex items-center gap-1.5 max-[900px]:hidden">
+      {
+        navigation.map((item) => (
+          <a
+            class="rounded-full border-2 border-transparent px-[11px] py-2 text-[0.92rem] font-[750] text-text-secondary hover:border-text-primary hover:bg-accent-soft hover:text-text-primary aria-[current=page]:border-text-primary aria-[current=page]:bg-accent-soft aria-[current=page]:text-text-primary"
+            href={item.href}
+            aria-current={isActive(item.href) ? "page" : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <details class="relative hidden max-[900px]:block">
+      <summary class="cursor-pointer list-none rounded-full bg-surface px-[13px] py-[9px] font-extrabold shadow-brutal-sm [border:var(--border-strong)] [&::-webkit-details-marker]:hidden">
+        Menu
+      </summary>
+      <div class="absolute right-0 top-[calc(100%+12px)] grid min-w-[220px] gap-1 rounded-card bg-surface p-2.5 shadow-brutal [border:var(--border-strong)]">
+        {
+          navigation.map((item) => (
+            <a
+              class="rounded-full border-2 border-transparent px-[11px] py-2 text-[0.92rem] font-[750] text-text-secondary hover:border-text-primary hover:bg-accent-soft hover:text-text-primary aria-[current=page]:border-text-primary aria-[current=page]:bg-accent-soft aria-[current=page]:text-text-primary"
+              href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </div>
+    </details>
+  </nav>
+</header>

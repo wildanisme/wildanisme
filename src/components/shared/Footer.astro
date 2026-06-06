@@ -1,0 +1,32 @@
+---
+import { navigation } from "@data/navigation";
+import { site } from "@data/site";
+---
+
+<footer class="mt-24 border-t-[3px] border-text-primary bg-code-surface text-white">
+  <div class="mx-auto grid w-[calc(100%_-_32px)] max-w-[1120px] grid-cols-[minmax(0,1.4fr)_minmax(180px,0.8fr)_minmax(220px,0.8fr)] gap-8 py-12 max-[780px]:grid-cols-1 max-[720px]:w-[calc(100%_-_24px)]">
+    <div>
+      <a class="font-black text-white/75 hover:text-white" href="/">{site.brand}</a>
+      <p class="text-white/75">
+        Maintenance website, bug fix, optimasi, deploy aplikasi, hardening
+        server, dan SEO teknis. Yang rewel diberesin, yang rapuh dirapikan.
+      </p>
+    </div>
+    <nav class="grid gap-2" aria-label="Navigasi footer">
+      {
+        navigation.map((item) => (
+          <a class="text-white/75 hover:text-white" href={item.href}>{item.label}</a>
+        ))
+      }
+    </nav>
+    <div>
+      <p class="font-black text-white/75">Kontak</p>
+      <a class="text-white/75 hover:text-white" href={`mailto:${site.email}`}>{site.email}</a>
+      <p class="text-white/75">{site.responseTime}</p>
+    </div>
+  </div>
+  <div class="mx-auto flex w-[calc(100%_-_32px)] max-w-[1120px] justify-between gap-4 border-t border-white/20 py-[18px] text-[0.9rem] text-white/75 max-[780px]:grid max-[720px]:w-[calc(100%_-_24px)]">
+    <span>© {new Date().getFullYear()} {site.owner}</span>
+    <span>Dibangun untuk Cloudflare Pages.</span>
+  </div>
+</footer>

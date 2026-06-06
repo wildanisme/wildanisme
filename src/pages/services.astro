@@ -1,0 +1,63 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/shared/Section.astro";
+import Badge from "@components/shared/Badge.astro";
+import Button from "@components/shared/Button.astro";
+import PageHeader from "@components/shared/PageHeader.astro";
+import { getPublishedServices } from "@lib/content";
+
+const services = await Promise.all(
+  getPublishedServices(await getCollection("services")).map(async (entry) => {
+    const { Content } = await render(entry);
+    return { entry, Content };
+  })
+);
+---
+
+<BaseLayout
+  title="Layanan Web Development, DevOps, dan SEO"
+  description="Layanan wildanisme untuk maintenance website, bug fix, optimasi website, deploy aplikasi, hardening server, dan SEO teknis."
+>
+  <PageHeader
+    eyebrow="Layanan"
+    title="Beresin web yang rewel, deploy yang bikin tegang, dan SEO yang masih malu-malu."
+    description="Pilihannya sederhana: bug diberesin, website dioptimasi, aplikasi dideploy bener, server dikeraskan, SEO dirapikan. Tidak perlu drama, tidak perlu jargon kebanyakan."
+  />
+
+  <Section>
+    <div class="grid gap-[22px]">
+      {services.map(({ entry: service, Content }) => (
+        <article id={service.data.slug} class="brutal-panel grid gap-6 p-6">
+          <div>
+            <Badge tone={service.data.isFeatured ? "accent" : "neutral"}>
+              {service.data.isFeatured ? "Fokus utama" : "Pendukung"}
+            </Badge>
+            <h2 class="mb-0 mt-3 text-[2rem] font-black leading-tight md:text-[2.5rem]">{service.data.title}</h2>
+            <p class="m-0 mt-3 max-w-[860px] leading-[1.65] text-text-secondary">{service.data.description}</p>
+          </div>
+          <div class="content max-w-[860px]">
+            <Content />
+          </div>
+          <div class="grid gap-[18px] md:grid-cols-3">
+            <div class="rounded-card border border-border bg-surface-muted p-4">
+              <h3 class="m-0">Deliverables</h3>
+              <ul class="text-text-secondary">{service.data.deliverables.map((item) => <li>{item}</li>)}</ul>
+            </div>
+            <div class="rounded-card border border-border bg-surface-muted p-4">
+              <h3 class="m-0">Cocok untuk</h3>
+              <ul class="text-text-secondary">{service.data.idealFor.map((item) => <li>{item}</li>)}</ul>
+            </div>
+            <div class="rounded-card border border-border bg-surface-muted p-4">
+              <h3 class="m-0">Tools</h3>
+              <ul class="text-text-secondary">{service.data.tools.map((item) => <li>{item}</li>)}</ul>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+    <div class="mt-7">
+      <Button href="/contact">Ceritakan masalahnya</Button>
+    </div>
+  </Section>
+</BaseLayout>

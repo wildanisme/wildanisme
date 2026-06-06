@@ -1,0 +1,20 @@
+{
+  "name": "wildanisme",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "check": "astro check",
+    "preview": "astro preview",
+    "lint": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/tailwind": "^6.0.2",
+    "astro": "^6.4.4",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^6.0.3"
+  }
+}

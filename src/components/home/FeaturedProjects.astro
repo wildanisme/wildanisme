@@ -1,0 +1,24 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Section from "@components/shared/Section.astro";
+import Button from "@components/shared/Button.astro";
+import ProjectGrid from "@components/project/ProjectGrid.astro";
+
+interface Props {
+  projects: CollectionEntry<"projects">[];
+  clients: CollectionEntry<"clients">[];
+}
+
+const { projects, clients } = Astro.props;
+---
+
+<Section
+  eyebrow="Portfolio"
+  title="Bukti kerja. Biar tidak cuma katanya-katanya."
+  description="Setiap project ditulis dengan konteks: masalah awalnya apa, bagian mana yang saya pegang, dan hasil teknis yang bisa dicek."
+>
+  <ProjectGrid projects={projects.slice(0, 3)} clients={clients} />
+  <div class="mt-6">
+    <Button href="/projects" variant="secondary">Buka portfolio</Button>
+  </div>
+</Section>

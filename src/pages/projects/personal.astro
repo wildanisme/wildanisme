@@ -1,0 +1,37 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Button from "@components/shared/Button.astro";
+import Section from "@components/shared/Section.astro";
+import PageHeader from "@components/shared/PageHeader.astro";
+import ProjectGrid from "@components/project/ProjectGrid.astro";
+import { getPersonalProjects, getPublishedClients } from "@lib/content";
+
+const projects = getPersonalProjects(await getCollection("projects"));
+const clients = getPublishedClients(await getCollection("clients"));
+---
+
+<BaseLayout
+  title="Project Personal"
+  description="Project personal wildanisme yang tidak terkait dengan klien."
+>
+  <PageHeader
+    eyebrow="Project personal"
+    tone="highlight"
+    title="Project personal, tempat saya ngetes cara kerja sendiri."
+    description="Project personal dipisahkan dari client work agar jelas mana eksplorasi pribadi, mana pekerjaan untuk klien. Di sini fokusnya proses berpikir, tooling, dan kemampuan mengirim solusi dari nol."
+  >
+    <div class="flex flex-wrap gap-3">
+      <Button href="/projects" variant="secondary">Semua project</Button>
+      <Button href="/projects/personal" variant="primary">Project personal</Button>
+    </div>
+  </PageHeader>
+  <Section>
+    <ProjectGrid
+      projects={projects}
+      clients={clients}
+      emptyTitle="Belum ada project personal"
+      emptyDescription="Project personal akan tampil di sini setelah dipublikasikan."
+    />
+  </Section>
+</BaseLayout>

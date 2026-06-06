@@ -1,0 +1,24 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/shared/Section.astro";
+import PageHeader from "@components/shared/PageHeader.astro";
+import PostList from "@components/blog/PostList.astro";
+import { getPublishedPosts } from "@lib/content";
+
+const posts = getPublishedPosts(await getCollection("blog"));
+---
+
+<BaseLayout
+  title="Blog"
+  description="Tulisan wildanisme tentang web maintenance, bug fix, DevOps, deploy aplikasi, hardening server, technical SEO, dan performa."
+>
+  <PageHeader
+    eyebrow="Blog"
+    title="Catatan teknis, bukan kultus jargon."
+    description="Tulisan pendek tentang deploy, maintenance, bug fix, SEO teknis, performa, dan keputusan kecil yang biasanya baru terasa saat web sudah jalan."
+  />
+  <Section>
+    <PostList posts={posts} />
+  </Section>
+</BaseLayout>

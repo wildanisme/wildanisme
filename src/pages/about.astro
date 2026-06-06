@@ -1,0 +1,50 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/shared/Section.astro";
+import Button from "@components/shared/Button.astro";
+import PageHeader from "@components/shared/PageHeader.astro";
+import { site } from "@data/site";
+---
+
+<BaseLayout
+  title="Tentang Wildan"
+  description="Tentang Wildan Taufiq Abdul Aziz, independent web developer, sysadmin/DevOps, dan SEO teknis di balik wildanisme."
+>
+  <PageHeader
+    eyebrow="Tentang"
+    title="Saya orang yang dipanggil waktu web mulai aneh-aneh."
+    description="wildanisme adalah ruang kerja personal saya untuk web maintenance, bug fix, optimasi, deploy aplikasi, hardening server, SEO teknis, dan tulisan yang tidak terlalu kaku."
+  />
+
+  <Section>
+    <div class="grid gap-[22px] lg:grid-cols-3">
+      <article class="brutal-panel p-[22px]">
+        <h2>Profil singkat</h2>
+        <p class="text-text-secondary">
+          Saya {site.owner}. Fokus saya adalah membantu bisnis dan tim kecil
+          merawat website, membetulkan bug, mengoptimasi performa, dan membuat
+          proses deploy lebih jelas.
+        </p>
+      </article>
+      <article class="brutal-panel p-[22px]">
+        <h2>Cara kerja</h2>
+        <p class="text-text-secondary">
+          Saya mulai dari gejala yang paling mengganggu, cari akar masalahnya,
+          lalu kasih fix yang bisa dicek. Kalau ada risiko, saya tulis, tidak
+          disembunyikan di balik istilah keren.
+        </p>
+      </article>
+      <article class="brutal-panel p-[22px]">
+        <h2>Area teknis</h2>
+        <p class="text-text-secondary">
+          Web development, maintenance website, bug fix, optimasi performa,
+          sysadmin, DevOps, deploy aplikasi, server hardening, technical SEO,
+          Astro, TypeScript, dan Cloudflare.
+        </p>
+      </article>
+    </div>
+    <div class="mt-7">
+      <Button href="/contact">Ceritakan rewelnya</Button>
+    </div>
+  </Section>
+</BaseLayout>

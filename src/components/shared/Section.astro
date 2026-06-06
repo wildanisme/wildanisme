@@ -1,0 +1,31 @@
+---
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  class?: string;
+}
+
+const { eyebrow, title, description, class: className = "" } = Astro.props;
+---
+
+<section class:list={["py-0", className]}>
+  <div class="mx-auto w-[calc(100%_-_32px)] max-w-[1120px] max-[720px]:w-[calc(100%_-_24px)]">
+    {
+      (eyebrow || title || description) && (
+        <header class="mb-7 grid max-w-[720px] gap-3">
+          {
+            eyebrow && (
+              <p class="m-0 w-fit rounded-full bg-accent-soft px-2.5 py-1.5 text-[0.8rem] font-black uppercase text-text-primary shadow-brutal-sm [border:var(--border-strong)]">
+                {eyebrow}
+              </p>
+            )
+          }
+          {title && <h2 class="m-0 max-w-[760px] text-5xl font-black leading-[1.05] max-md:text-[2.15rem]">{title}</h2>}
+          {description && <p class="m-0 text-[1.04rem] leading-[1.7] text-text-secondary">{description}</p>}
+        </header>
+      )
+    }
+    <slot />
+  </div>
+</section>

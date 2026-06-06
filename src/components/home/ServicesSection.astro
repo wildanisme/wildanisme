@@ -1,0 +1,35 @@
+---
+import Section from "@components/shared/Section.astro";
+import Card from "@components/shared/Card.astro";
+import Button from "@components/shared/Button.astro";
+import type { CollectionEntry } from "astro:content";
+import { getFeaturedServices } from "@lib/content";
+
+interface Props {
+  services: CollectionEntry<"services">[];
+}
+
+const { services } = Astro.props;
+const featuredServices = getFeaturedServices(services);
+---
+
+<Section
+  eyebrow="Layanan"
+  title="Tiga lapak utama: web, server, SEO."
+  description="Bukan paket sulap. Saya bantu bagian yang sering bikin project digital macet: website yang rewel, deploy yang bikin was-was, dan SEO yang belum kebaca mesin pencari."
+>
+  <div class="grid grid-cols-3 gap-[22px] max-[900px]:grid-cols-1">
+    {featuredServices.map((service) => (
+      <Card href={`/services#${service.data.slug}`}>
+        <div class="grid gap-3 p-[22px]">
+          <span class="text-[0.82rem] font-black text-highlight">{service.data.tools.slice(0, 2).join(" + ")}</span>
+          <h3 class="m-0">{service.data.title}</h3>
+          <p class="m-0 leading-[1.65] text-text-secondary">{service.data.summary}</p>
+        </div>
+      </Card>
+    ))}
+  </div>
+  <div class="mt-6">
+    <Button href="/services" variant="secondary">Lihat yang bisa diberesin</Button>
+  </div>
+</Section>

@@ -1,0 +1,18 @@
+---
+import type { CollectionEntry } from "astro:content";
+import ProjectGrid from "@components/project/ProjectGrid.astro";
+
+interface Props {
+  projects: CollectionEntry<"projects">[];
+  clients: CollectionEntry<"clients">[];
+}
+
+const { projects, clients } = Astro.props;
+---
+
+<ProjectGrid
+  projects={projects}
+  clients={clients}
+  emptyTitle="Belum ada project publik untuk klien ini"
+  emptyDescription="Project akan tampil di sini setelah dipublikasikan."
+/>

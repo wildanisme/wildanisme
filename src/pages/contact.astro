@@ -1,0 +1,33 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Button from "@components/shared/Button.astro";
+import Badge from "@components/shared/Badge.astro";
+import { site } from "@data/site";
+---
+
+<BaseLayout
+  title="Kontak"
+  description="Hubungi wildanisme untuk maintenance website, bug fix, optimasi, deploy aplikasi, hardening server, atau SEO teknis."
+>
+  <section class="container grid items-center gap-8 py-[72px] lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.7fr)]">
+    <div class="grid gap-[18px]">
+      <Badge tone="accent">Kontak</Badge>
+      <h1 class="m-0 max-w-[820px] text-[2.75rem] font-black leading-[0.96] md:text-[4.8rem]">
+        Ceritakan rewelnya. Nanti kita bedah pelan-pelan.
+      </h1>
+      <p class="m-0 max-w-[720px] text-[1.05rem] leading-[1.7] text-text-secondary">
+        Kirim URL, error yang muncul, target yang ingin dicapai, dan bagian yang
+        paling bikin garuk kepala. Saya balas dengan langkah yang masuk akal,
+        bukan proposal 40 halaman.
+      </p>
+    </div>
+    <div class="brutal-panel grid gap-4 p-6">
+      <span class="font-extrabold text-text-secondary">Email</span>
+      <a class="text-[1.22rem] font-black underline decoration-[3px] underline-offset-[6px] md:text-[1.8rem]" href={`mailto:${site.email}`}>{site.email}</a>
+      <p class="m-0 leading-[1.7] text-text-secondary">{site.responseTime}</p>
+      <div class="flex flex-wrap gap-3">
+        {site.socialLinks.map((link) => <Button href={link.url} variant="secondary">{link.label}</Button>)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,52 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Badge from "@components/shared/Badge.astro";
+import Button from "@components/shared/Button.astro";
+import { getClient, getClientLabel } from "@lib/content";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  clients: CollectionEntry<"clients">[];
+}
+
+const { project, clients } = Astro.props;
+const client = getClient(clients, project.data.clientSlug);
+---
+
+<aside class="grid gap-4 rounded-card bg-surface p-5 shadow-brutal [border:var(--border-strong)]">
+  <div>
+    <span class="mb-1 block text-[0.82rem] font-extrabold text-text-secondary">Role</span>
+    <strong class="font-black">{project.data.role}</strong>
+  </div>
+  <div>
+    <span class="mb-1 block text-[0.82rem] font-extrabold text-text-secondary">Tahun</span>
+    <strong class="font-black">{project.data.year}</strong>
+  </div>
+  <div>
+    <span class="mb-1 block text-[0.82rem] font-extrabold text-text-secondary">Industri</span>
+    <strong class="font-black">{project.data.industry}</strong>
+  </div>
+  <div>
+    <span class="mb-1 block text-[0.82rem] font-extrabold text-text-secondary">Klien</span>
+    {
+      client?.data.isPublic ? (
+        <a class="font-black underline decoration-2 underline-offset-4" href={`/clients/${client.data.slug}`}>{client.data.name}</a>
+      ) : (
+        <strong class="font-black">{getClientLabel(clients, project.data.clientSlug)}</strong>
+      )
+    }
+  </div>
+  <div>
+    <span class="mb-1 block text-[0.82rem] font-extrabold text-text-secondary">Stack</span>
+    <div class="flex flex-wrap gap-1.5">
+      {project.data.stack.map((item) => <Badge tone="neutral">{item}</Badge>)}
+    </div>
+  </div>
+  {
+    project.data.demoUrl && (
+      <Button href={project.data.demoUrl} variant="primary">
+        Lihat demo
+      </Button>
+    )
+  }
+</aside>

@@ -1,0 +1,35 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Section from "@components/shared/Section.astro";
+import ClientCard from "@components/client/ClientCard.astro";
+import Button from "@components/shared/Button.astro";
+import { getFeaturedClients } from "@lib/content";
+
+interface Props {
+  projects: CollectionEntry<"projects">[];
+  clients: CollectionEntry<"clients">[];
+}
+
+const { projects, clients } = Astro.props;
+const featuredClients = getFeaturedClients(clients);
+const clientCount = featuredClients.length;
+const gridColumnsClass = clientCount < 3 ? "grid-cols-2" : "grid-cols-3";
+---
+
+<Section
+  eyebrow="Client proof"
+  title="Pernah pegang client, bukan cuma ngoprek di localhost."
+  description="Logo yang boleh tampil saya tampilkan. Detail sensitif tetap aman, tapi konteks teknisnya tetap bisa dibaca."
+>
+  <div class:list={["grid gap-[22px] max-md:grid-cols-1", gridColumnsClass]}>
+    {featuredClients.map((client) => (
+      <ClientCard
+        client={client}
+        projectCount={projects.filter((project) => project.data.clientSlug === client.data.slug).length}
+      />
+    ))}
+  </div>
+  <div class="mt-6">
+    <Button href="/clients" variant="secondary">Lihat konteks klien</Button>
+  </div>
+</Section>

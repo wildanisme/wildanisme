@@ -1,0 +1,23 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Section from "@components/shared/Section.astro";
+import Button from "@components/shared/Button.astro";
+import PostList from "@components/blog/PostList.astro";
+
+interface Props {
+  posts: CollectionEntry<"blog">[];
+}
+
+const { posts } = Astro.props;
+---
+
+<Section
+  eyebrow="Tulisan"
+  title="Catatan teknis, bukan kultus jargon."
+  description="Tulisan pendek tentang deploy, maintenance, SEO teknis, performa, dan keputusan kecil yang biasanya baru terasa saat web sudah jalan."
+>
+  <PostList posts={posts.slice(0, 3)} />
+  <div class="mt-6">
+    <Button href="/blog" variant="secondary">Baca catatan teknis</Button>
+  </div>
+</Section>
