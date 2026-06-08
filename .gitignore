@@ -35,8 +35,9 @@ playwright-report/
 test-results/
 
 #agent
-.agents/
+# .agents/
 PLAN.md
 # Local screenshots and ad hoc dev artifacts
+screenshots/
 wildanisme-home*.png
 *:4321

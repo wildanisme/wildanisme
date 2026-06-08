@@ -55,12 +55,12 @@ const structuredData = breadcrumbJsonLd([
       <Content />
     </ContentLayout>
   </Section>
-  <Section title="Project yang dikerjakan">
+  <Section title="Project yang dikerjakan" class="mt-6">
     <ClientProjectList projects={projects} clients={clients} />
   </Section>
   {
     client.data.testimonial && (
-      <Section eyebrow="Testimonial" title="Kata klien">
+      <Section eyebrow="Testimonial" title="Kata klien" class="mt-6">
         <blockquote class="brutal-panel m-0 max-w-[780px] p-6 text-[1.3rem] font-extrabold leading-[1.55]">{client.data.testimonial}</blockquote>
       </Section>
     )

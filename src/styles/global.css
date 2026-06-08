@@ -33,11 +33,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background:
-    linear-gradient(var(--color-border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-border) 1px, transparent 1px),
-    var(--color-background);
-  background-size: 48px 48px;
+  background: var(--color-background);
   color: var(--color-text-primary);
 }
 
@@ -45,8 +41,82 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: rgba(247, 248, 245, 0.88);
+  pointer-events: none;
   content: "";
+}
+
+html[data-background="flat"] body {
+  background: var(--color-background);
+}
+
+html[data-background="flat"] body::before {
+  background: transparent;
+}
+
+html[data-background="dots"] body {
+  background:
+    radial-gradient(circle at 1px 1px, rgba(21, 26, 24, 0.13) 1px, transparent 0),
+    var(--color-background);
+  background-size: 24px 24px;
+}
+
+html[data-background="dots"] body::before {
+  background: rgba(247, 248, 245, 0.72);
+}
+
+html[data-background="noise"] body {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0, 184, 148, 0.06), transparent 26%),
+    radial-gradient(circle at 80% 12%, rgba(1, 163, 164, 0.06), transparent 22%),
+    var(--color-background);
+}
+
+html[data-background="noise"] body::before {
+  opacity: 0.34;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(21, 26, 24, 0.12) 0 1px, transparent 1px),
+    radial-gradient(circle at 72% 38%, rgba(21, 26, 24, 0.08) 0 1px, transparent 1px),
+    radial-gradient(circle at 42% 82%, rgba(21, 26, 24, 0.1) 0 1px, transparent 1px);
+  background-size: 18px 18px, 26px 26px, 34px 34px;
+}
+
+html[data-background="diagonal"] body {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(21, 26, 24, 0.08) 0,
+      rgba(21, 26, 24, 0.08) 1px,
+      transparent 1px,
+      transparent 18px
+    ),
+    var(--color-background);
+}
+
+html[data-background="diagonal"] body::before {
+  background: rgba(247, 248, 245, 0.76);
+}
+
+html[data-background="best"] body {
+  background:
+    linear-gradient(180deg, transparent 0 20%, rgba(221, 248, 240, 0.64) 20% 34%, transparent 34% 62%, rgba(238, 242, 237, 0.95) 62% 76%, transparent 76%),
+    radial-gradient(circle at 1px 1px, rgba(21, 26, 24, 0.09) 1px, transparent 0),
+    var(--color-background);
+  background-size: auto, 28px 28px, auto;
+}
+
+html[data-background="best"] body::before {
+  background: rgba(247, 248, 245, 0.78);
+}
+
+html[data-background="square"] body {
+background:
+      linear-gradient(var(--color-border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-border) 1px, transparent 1px),
+      var(--color-background);
+    background-size: 48px 48px;
+}
+html[data-background="best"] body::before {
+  background: rgba(247, 248, 245, 0.88);
 }
 
 * {

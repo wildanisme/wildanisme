@@ -7,8 +7,8 @@ export const site = {
   title: "wildanisme - Web Development, DevOps, dan SEO",
   description:
     "wildanisme bantu beresin website yang mulai rewel: maintenance, bug fix, optimasi, deploy aplikasi, hardening server, dan SEO teknis.",
-  email: "hello@wildanisme.com",
-  responseTime: "Biasanya membalas dalam 1-2 hari kerja.",
+  email: "me@wildanisme.com",
+  responseTime: "Saya berkomiotmen untuk merespon semua pesan dengan cepat kilat.",
   socialLinks: [
     { label: "GitHub", url: "https://github.com/wildanisme" },
     { label: "LinkedIn", url: "https://www.linkedin.com/in/wildanisme" }

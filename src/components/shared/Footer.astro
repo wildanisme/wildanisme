@@ -1,32 +1,50 @@
 ---
-import { navigation } from "@data/navigation";
+import { navigation, partnersProducts } from "@data/navigation";
 import { site } from "@data/site";
 ---
 
-<footer class="mt-24 border-t-[3px] border-text-primary bg-code-surface text-white">
-  <div class="mx-auto grid w-[calc(100%_-_32px)] max-w-[1120px] grid-cols-[minmax(0,1.4fr)_minmax(180px,0.8fr)_minmax(220px,0.8fr)] gap-8 py-12 max-[780px]:grid-cols-1 max-[720px]:w-[calc(100%_-_24px)]">
-    <div>
-      <a class="font-black text-white/75 hover:text-white" href="/">{site.brand}</a>
-      <p class="text-white/75">
-        Maintenance website, bug fix, optimasi, deploy aplikasi, hardening
-        server, dan SEO teknis. Yang rewel diberesin, yang rapuh dirapikan.
-      </p>
-    </div>
-    <nav class="grid gap-2" aria-label="Navigasi footer">
-      {
-        navigation.map((item) => (
-          <a class="text-white/75 hover:text-white" href={item.href}>{item.label}</a>
-        ))
-      }
-    </nav>
-    <div>
-      <p class="font-black text-white/75">Kontak</p>
-      <a class="text-white/75 hover:text-white" href={`mailto:${site.email}`}>{site.email}</a>
-      <p class="text-white/75">{site.responseTime}</p>
+<footer class="mt-24 border-t-[5px] border-text-primary bg-inherit">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div class="flex flex-col gap-3">
+            <a class="font-black text-gray-800 hover:text-accent-secondary transition-colors uppercase underline select-none mb-3" href="/">{site.brand}</a>
+            <p class="font-medium text-gray-950">
+            Maintenance website, bug fix, optimasi, deploy aplikasi, hardening
+            server, dan SEO teknis. Yang rewel diberesin, yang rapuh dirapikan.
+            </p>
+        </div>
+        <div>
+            <h3 class="text-lg font-black uppercase text-gray-950 tracking-wider mb-4">Menu Lainnya</h3>
+            <ul>
+                <li class="space-y-2">
+                    {
+                    navigation.map((item) => (
+                        <a class="block font-black text-gray-950 hover:text-accent-secondary underline transition-colors" href={item.href}>{item.label}</a>
+                    ))
+                    }
+                </li>
+            </ul>
+        </div>
+        <div>
+            <h3 class="text-lg font-black uppercase text-gray-950 tracking-wider mb-4">Partners & Product</h3>
+            <ul>
+                <li class="space-y-2">
+                    {
+                    partnersProducts.map((item) => (
+                        <a class="block font-black text-gray-950 hover:text-accent-secondary underline transition-colors" href={item.href}>{item.label}</a>
+                    ))
+                    }
+                </li>
+            </ul>
+        </div>
+        <div>
+            <h3 class="text-lg font-black uppercase text-gray-950 tracking-wider mb-4">Kontak</h3>
+            <a class="block font-black text-gray-800 hover:text-accent-secondary transition-colors" href={`mailto:${site.email}`}>{site.email}</a>
+            <p class="text-gray-950">{site.responseTime}</p>
+        </div>
     </div>
   </div>
-  <div class="mx-auto flex w-[calc(100%_-_32px)] max-w-[1120px] justify-between gap-4 border-t border-white/20 py-[18px] text-[0.9rem] text-white/75 max-[780px]:grid max-[720px]:w-[calc(100%_-_24px)]">
-    <span>© {new Date().getFullYear()} {site.owner}</span>
-    <span>Dibangun untuk Cloudflare Pages.</span>
+  <div class="mx-auto justify-between gap-4 border-t-[3px] border-text-primary py-[18px] text-[0.9rem] text-black max-[780px]:grid max-[720px]:w-[calc(100%_-_24px)]">
+      <span class="text-black font-bold align-middle">© {new Date().getFullYear()} {site.brand} All Right Reserved</span>
   </div>
 </footer>
