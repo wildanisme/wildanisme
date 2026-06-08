@@ -1,16 +1,16 @@
 ---
-title: "Company Profile untuk Studio Lokal"
-slug: "company-profile-studio"
-clientSlug: "studio-lokal"
+title: "Maintenance Aplikasi OJS, server dan SEO Optimization"
+slug: "maintenance-aplikasi-ojs-server-dan-seo-optimization"
+clientSlug: "institut-ummul-quro-al-islami-bogor"
 isPublished: true
 isFeatured: true
-summary: "Website company profile yang menonjolkan layanan, portfolio, dan jalur kontak tanpa bikin pengunjung mikir terlalu lama."
+summary: "Layanan jurnal kampus sering error, dan tidak terindex dengan baik di Google Searh. Impressions melonnjak hingga 200% dari 3 bulan sebelumnya."
 problem: "Studio membutuhkan website yang lebih cepat, mudah dibaca, dan lebih jelas dalam menjelaskan layanan."
 solution: "Membangun struktur halaman baru, merapikan hierarchy konten, dan menyiapkan metadata SEO dasar."
-role: ["Web developer"]
-stack: ["Astro", "Tailwind CSS", "Markdown", "SEO"]
-year: 2025
-industry: ["Creative service"]
+role: ["DevOps", "SEO"]
+stack: ["OJS", "Google Search Console", "SEO", "MySQL"]
+year: 2026
+industry: ["Education"]
 gallery: []
 outcomes:
   - "Struktur konten lebih mudah dipindai calon klien."

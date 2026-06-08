@@ -25,10 +25,10 @@ const projects = defineCollection({
       summary: z.string(),
       problem: z.string(),
       solution: z.string(),
-      role: z.string(),
+      role: z.array(z.string()).default([]),
       stack: z.array(z.string()).default([]),
       year: z.number(),
-      industry: z.string(),
+      industry: z.array(z.string()).default([]),
       coverImage: z.string().optional(),
       gallery: z.array(z.string()).default([]),
       demoUrl: z.url().optional(),
@@ -75,19 +75,20 @@ const services = defineCollection({
 
 const clients = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/clients" }),
-  schema: z.object({
-    name: z.string(),
-    slug: z.string(),
-    logo: z.string().default(""),
-    industry: z.string(),
-    website: z.string().default(""),
-    relationship: z.string(),
-    testimonial: z.string().default(""),
-    order: z.number().default(0),
-    isPublic: z.boolean().default(true),
-    isPublished: z.boolean().default(true),
-    isFeatured: z.boolean().default(false),
-    coverImage: z.string().default("")
+  schema: ({ image }) =>
+    z.object({
+      name: z.string(),
+      slug: z.string(),
+      logo: z.string().default(""),
+      industry: z.string(),
+      website: z.string().default(""),
+      relationship: z.string(),
+      testimonial: z.string().default(""),
+      order: z.number().default(0),
+      isPublic: z.boolean().default(true),
+      isPublished: z.boolean().default(true),
+      isFeatured: z.boolean().default(false),
+      coverImage: z.string().default("")
   })
 });
 

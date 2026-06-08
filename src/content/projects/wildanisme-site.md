@@ -6,10 +6,10 @@ isFeatured: true
 summary: "Website personal untuk menjelaskan layanan web maintenance, DevOps, SEO teknis, project, klien, dan tulisan teknis."
 problem: "Butuh satu tempat yang rapi untuk menjelaskan layanan, bukti kerja, tulisan, dan cara menghubungi tanpa terdengar seperti template portfolio."
 solution: "Membangun website statis berbasis Astro dengan content collections dan visual soft neo brutalism."
-role: "Designer dan developer"
+role: ["Designer dan developer"]
 stack: ["Astro", "TypeScript", "Tailwind CSS", "Content Collections"]
 year: 2026
-industry: "Personal portfolio"
+industry: ["Personal portfolio"]
 gallery: []
 outcomes:
   - "Konten project dan blog bisa dikelola dari Markdown."

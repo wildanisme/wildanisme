@@ -14,6 +14,7 @@ author: "Wildan Taufiq Abdul Aziz"
 ## Jawaban singkat
 
 DevOps untuk project kecil tidak harus ribet. Mulai dari build yang bisa diulang, environment variable yang jelas, preview deploy, dan catatan rollback.
+![Diagram deploy sederhana](../../assets/images/clients/logo-iuqi.png)
 
 ## Checklist dasar
 
