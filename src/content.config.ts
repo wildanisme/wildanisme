@@ -79,7 +79,7 @@ const clients = defineCollection({
     z.object({
       name: z.string(),
       slug: z.string(),
-      logo: z.string().default(""),
+      logo: image().optional(),
       industry: z.string(),
       website: z.string().default(""),
       relationship: z.string(),
@@ -88,7 +88,7 @@ const clients = defineCollection({
       isPublic: z.boolean().default(true),
       isPublished: z.boolean().default(true),
       isFeatured: z.boolean().default(false),
-      coverImage: z.string().default("")
+      coverImage: image().optional()
   })
 });
 

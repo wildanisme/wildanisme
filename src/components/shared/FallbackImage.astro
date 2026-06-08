@@ -1,6 +1,9 @@
 ---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro:assets";
+
 interface Props {
-  src?: string;
+  src?: ImageMetadata | string;
   alt: string;
   label?: string;
   aspect?: "wide" | "project" | "square";
@@ -17,7 +20,7 @@ const aspectClasses = {
 
 {
   src ? (
-    <img class:list={["w-full border-b-[3px] border-text-primary object-cover", aspectClasses[aspect]]} src={src} alt={alt} loading="lazy" />
+    <Image class:list={["w-full border-b-[3px] border-text-primary object-cover", aspectClasses[aspect]]} src={src} alt={alt} loading="lazy" />
   ) : (
     <div
       class:list={[
