@@ -1,14 +1,23 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import { unified } from "@astrojs/markdown-remark";
-import remarkCallouts from "./src/lib/remark-callouts.mjs";
-
+import rehypeCallouts from "rehype-callouts";
 
 export default defineConfig({
   site: "https://wildanisme.com",
   markdown: {
     processor: unified({
-      remarkPlugins: [remarkCallouts]
+      rehypePlugins: [
+        [
+          rehypeCallouts,
+          {
+            theme: "obsidian",
+            aliases: {
+              warning: ["alert"]
+            }
+          }
+        ]
+      ]
     })
   },
   integrations: [

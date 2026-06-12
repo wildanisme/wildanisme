@@ -1,6 +1,5 @@
 ---
 import { getCollection } from "astro:content";
-import { Image } from "astro:assets";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import Section from "@components/shared/Section.astro";
 import PageHeader from "@components/shared/PageHeader.astro";
@@ -17,8 +16,8 @@ const publishedClients = getPublishedClients(await getCollection("clients"));
 >
   <PageHeader
     eyebrow="Klien"
-    title="Konteks kerja boleh dibaca, rahasia klien tetap aman."
-    description="Logo dan nama klien ditampilkan ketika boleh dipublikasikan. Untuk pekerjaan confidential, identitas tetap dijaga, tapi masalah teknis dan peran saya tetap dijelaskan."
+    title="Di balik layar: beberapa klien yang mempercayakan dapurnya."
+    description="Beberapa klien ngasih izin buat mejeng di sini. Sisanya? Identitasnya saya simpan di brankas, tapi ilmunya tetap saya bagi."
   />
   <Section>
     <div class="grid gap-[22px] sm:grid-cols-2 lg:grid-cols-3">

@@ -24,11 +24,12 @@ const posts = getPublishedPosts(await getCollection("blog"));
     <ClientSection projects={projects} clients={clients} />
     <LatestPosts posts={posts} />
     <Section
+      class="px-3 py-1.5 text-xl"
       eyebrow="Mulai"
-      title="Punya web yang mulai mahal dirawat karena kebanyakan tambalan?"
+      title="Website Anda kayak Candi Roro Jonggrang, dibangun semalam, dirawat seabad?"
       description="Kirim URL, gejala, dan targetnya. Saya bantu bedah mana yang wajib diberesin dulu, mana yang masih bisa antre, dan apa langkah paling masuk akal."
     >
-      <Button href="/contact">Kirim gejalanya</Button>
+      <Button href="/contact">Diskusikan gejalanya</Button>
     </Section>
   </div>
 </BaseLayout>

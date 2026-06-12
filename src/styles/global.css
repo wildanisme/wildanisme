@@ -1,3 +1,5 @@
+@import "rehype-callouts/theme/obsidian";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

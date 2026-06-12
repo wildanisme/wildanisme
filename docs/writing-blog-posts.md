@@ -479,42 +479,102 @@ Untuk patch, pakai `diff`:
 ```
 ````
 
-## Callout `[!NOTE]`
+## Callout Obsidian
 
-Website ini mendukung callout gaya GitHub.
-
-Format:
+Website ini memakai `rehype-callouts` dengan theme Obsidian. Syntax-nya berbasis blockquote:
 
 ```md
-> [!NOTE]
+> [!note]
 > Ini catatan tambahan. Cocok untuk konteks yang membantu, tapi bukan inti artikel.
 ```
 
-Hasilnya akan tampil sebagai box callout.
+Nama tipe tidak case-sensitive. `NOTE`, `Note`, dan `note` dianggap sama.
 
-Tipe yang didukung:
+Tipe yang umum dipakai:
 
 ```md
-> [!NOTE]
+> [!note]
 > Catatan tambahan.
 
-> [!TIP]
+> [!info]
+> Konteks netral.
+
+> [!tip]
 > Saran praktis.
 
-> [!IMPORTANT]
-> Hal penting yang jangan dilewatkan.
+> [!success]
+> Konfirmasi bahwa sesuatu berhasil.
 
-> [!WARNING]
+> [!warning]
 > Risiko atau hal yang perlu dicek dulu.
 
-> [!CAUTION]
-> Peringatan keras. Pakai secukupnya.
+> [!danger]
+> Risiko serius: data hilang, deploy gagal, atau perilaku aplikasi salah.
 ```
+
+Tipe tambahan yang juga tersedia: `abstract`, `summary`, `tldr`, `todo`, `hint`, `important`, `check`, `done`, `question`, `help`, `faq`, `attention`, `caution`, `failure`, `missing`, `fail`, `error`, `bug`, `example`, `quote`, dan `cite`.
+
+Alias `alert` diarahkan ke `warning`, jadi ini juga valid:
+
+```md
+> [!alert]
+> Ini akan tampil seperti warning.
+```
+
+Preview tampilan:
+
+> [!note]
+> Catatan tambahan yang pembaca boleh tahu.
+
+> [!info]
+> Konteks netral. Tidak darurat, tapi membantu.
+
+> [!tip]
+> Saran praktis yang bisa langsung dicoba.
+
+> [!success]
+> Konfirmasi bahwa sesuatu sudah berjalan benar.
+
+> [!warning]
+> Ada risiko. Cek dulu sebelum lanjut.
+
+> [!alert]
+> Alias untuk warning. Cocok untuk peringatan yang tetap ingin ditulis sebagai alert.
+
+> [!danger]
+> Risiko serius: data hilang, deploy gagal, atau perilaku aplikasi salah.
+
+### Custom Title
+
+Tambahkan teks setelah tipe untuk mengganti judul default.
+
+```md
+> [!note] Did you know?
+> Teks setelah tipe menjadi judul callout.
+```
+
+### Collapsible Callout
+
+Tambahkan `-` setelah tipe agar callout tertutup secara default.
+
+```md
+> [!warning]- Read before proceeding
+> Ini tertutup saat halaman pertama dibuka.
+```
+
+Tambahkan `+` agar callout bisa ditutup, tapi terbuka secara default.
+
+```md
+> [!tip]+ Pro tip
+> Ini terbuka saat halaman pertama dibuka, tapi tetap bisa ditutup.
+```
+
+### Isi Callout
 
 Callout bisa berisi beberapa paragraf:
 
 ```md
-> [!WARNING]
+> [!warning]
 > Jangan langsung deploy ke production kalau build lokal belum lewat.
 >
 > Kedengarannya sepele, tapi banyak masalah dimulai dari "cuma ubah dikit".
@@ -523,7 +583,7 @@ Callout bisa berisi beberapa paragraf:
 Callout juga bisa berisi list:
 
 ```md
-> [!TIP]
+> [!tip]
 > Sebelum bug fix:
 >
 > - reproduksi error;
