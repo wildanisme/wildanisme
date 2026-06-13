@@ -1,0 +1,57 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Badge from "@components/shared/Badge.astro";
+import Button from "@components/shared/Button.astro";
+import { site } from "@data/site";
+---
+
+<BaseLayout
+  title="404 - Halaman tidak ketemu"
+  description="Halaman yang dicari tidak ditemukan. Kembali ke beranda, cek tools, atau hubungi wildanisme kalau ada link yang perlu dibereskan."
+  canonical="/404"
+  robots="noindex, nofollow"
+>
+  <section class="container grid min-h-[calc(100vh_-_220px)] items-center gap-8 py-[72px] lg:grid-cols-[minmax(0,0.92fr)_minmax(320px,0.72fr)]">
+    <div class="grid gap-[18px]">
+      <Badge tone="accent">404</Badge>
+      <h1 class="m-0 max-w-[820px] text-[2.75rem] font-black leading-[0.96] md:text-[4.8rem]">
+        Halamannya kabur. Mungkin link-nya lupa pamit.
+      </h1>
+      <p class="m-0 max-w-[720px] text-[1.05rem] leading-[1.7] text-text-secondary">
+        URL yang kamu buka tidak ketemu. Bisa jadi typo, halaman sudah pindah,
+        atau saya yang belum sempat beresin rambu-rambunya.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <Button href="/">Balik ke beranda</Button>
+        <Button href="/tools" variant="secondary">Cek tools</Button>
+        <Button href="/contact" variant="secondary">Lapor link rusak</Button>
+      </div>
+    </div>
+
+    <aside class="overflow-hidden rounded-card bg-surface shadow-brutal [border:var(--border-strong)]" aria-label="Catatan error 404">
+      <div class="flex gap-2 border-b-[3px] border-text-primary bg-accent p-3">
+        <span class="h-2.5 w-2.5 rounded-full border-2 border-text-primary bg-surface"></span>
+        <span class="h-2.5 w-2.5 rounded-full border-2 border-text-primary bg-surface"></span>
+        <span class="h-2.5 w-2.5 rounded-full border-2 border-text-primary bg-surface"></span>
+      </div>
+      <div class="grid gap-3 p-5">
+        <p class="m-0 font-mono text-[0.82rem] font-bold text-text-secondary">$ curl {Astro.url.pathname}</p>
+        <strong class="text-[1rem] leading-snug">404 Not Found</strong>
+
+        <p class="m-0 font-mono text-[0.82rem] font-bold text-text-secondary">$ diagnosa</p>
+        <strong class="text-[1rem] leading-snug">Alamatnya tidak ada di server ini.</strong>
+
+        <div class="mt-2 grid gap-2.5">
+          <div class="rounded-card border-2 border-text-primary bg-surface-muted p-3">
+            <span class="mb-1 block text-[0.78rem] font-extrabold text-text-secondary">Kemungkinan</span>
+            <strong class="block text-[0.95rem] leading-snug">Typo URL, halaman pindah, atau link lama belum diarahkan.</strong>
+          </div>
+          <div class="rounded-card border-2 border-text-primary bg-surface-muted p-3">
+            <span class="mb-1 block text-[0.78rem] font-extrabold text-text-secondary">Fix paling cepat</span>
+            <strong class="block text-[0.95rem] leading-snug">Mulai dari beranda. Kalau tetap nyasar, kirim URL-nya ke {site.email}.</strong>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </section>
+</BaseLayout>
