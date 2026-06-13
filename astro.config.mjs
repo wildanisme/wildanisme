@@ -1,14 +1,15 @@
 import { defineConfig } from "astro/config";
-import node from "@astrojs/node";
-import tailwind from "@astrojs/tailwind";
+import netlify from "@astrojs/netlify";
+import tailwindcss from "@tailwindcss/vite";
 import { unified } from "@astrojs/markdown-remark";
 import rehypeCallouts from "rehype-callouts";
 
 export default defineConfig({
   site: "https://wildanisme.com",
-  adapter: node({
-    mode: "standalone"
-  }),
+  adapter: netlify(),
+  vite: {
+    plugins: [tailwindcss()]
+  },
   markdown: {
     processor: unified({
       rehypePlugins: [
@@ -24,11 +25,6 @@ export default defineConfig({
       ]
     })
   },
-  integrations: [
-    tailwind({
-      applyBaseStyles: false
-    })
-  ],
   build: {
     format: "directory"
   }
