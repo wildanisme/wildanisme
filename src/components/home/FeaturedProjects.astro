@@ -18,7 +18,7 @@ const { projects, clients } = Astro.props;
   title="Bukti kerja. Biar tidak cuma katanya-katanya."
   description="Setiap project ditulis dengan konteks: masalah awalnya apa, bagian mana yang saya pegang, dan hasil teknis yang bisa dicek."
 >
-  <ProjectGrid projects={projects.slice(0, 3)} clients={clients} />
+  <ProjectGrid projects={projects.slice(0, 3)} clients={clients} matchClientColumns />
   <div class="mt-6">
     <Button href="/projects" variant="secondary">Buka portfolio</Button>
   </div>

@@ -6,8 +6,8 @@ publishedAt: 2026-02-10
 updatedAt: 2026-02-10
 tags: ["Astro", "SSG", "Website"]
 category: "Web development"
-isPublished: true
-isFeatured: true
+isPublished: false
+isFeatured: false
 author: "Wildan Taufiq Abdul Aziz"
 ---
 

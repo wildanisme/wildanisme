@@ -12,11 +12,12 @@ interface Props {
 
 const { project, clients } = Astro.props;
 const clientLabel = getClientLabel(clients, project.data.clientSlug);
+const projectImage = project.data.coverImage ?? project.data.gallery[0]?.image;
 ---
 
 <Card href={`/projects/${project.data.slug}`}>
   <FallbackImage
-    src={project.data.coverImage}
+    src={projectImage}
     alt={`Cover project ${project.data.title}`}
     label={project.data.title}
     aspect="project"

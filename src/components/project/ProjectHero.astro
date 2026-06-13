@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { project, clients } = Astro.props;
+const heroImage = project.data.coverImage ?? project.data.gallery[0]?.image;
 ---
 
 <header class="mx-auto grid w-[calc(100%_-_32px)] max-w-[1120px] items-center gap-8 py-14 pb-8 max-[720px]:w-[calc(100%_-_24px)] min-[881px]:grid-cols-[minmax(0,0.9fr)_minmax(320px,1fr)]">
@@ -26,7 +27,7 @@ const { project, clients } = Astro.props;
   </div>
   <div class="overflow-hidden rounded-card bg-surface shadow-brutal [border:var(--border-strong)]">
     <FallbackImage
-      src={project.data.coverImage}
+      src={heroImage}
       alt={`Cover project ${project.data.title}`}
       label={project.data.title}
       aspect="wide"

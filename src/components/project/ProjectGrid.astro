@@ -7,19 +7,25 @@ interface Props {
   clients: CollectionEntry<"clients">[];
   emptyTitle?: string;
   emptyDescription?: string;
+  matchClientColumns?: boolean;
 }
 
 const {
   projects,
   clients,
   emptyTitle = "Belum ada project",
-  emptyDescription = "Project akan tampil di sini setelah kontennya dipublikasikan."
+  emptyDescription = "Project akan tampil di sini setelah kontennya dipublikasikan.",
+  matchClientColumns = false
 } = Astro.props;
+
+const gridColumnsClass = matchClientColumns && projects.length < 3
+  ? "grid-cols-2 max-md:grid-cols-1"
+  : "grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1";
 ---
 
 {
   projects.length > 0 ? (
-    <div class="grid grid-cols-3 gap-[22px] max-lg:grid-cols-2 max-sm:grid-cols-1">
+    <div class:list={["grid gap-[22px]", gridColumnsClass]}>
       {projects.map((project) => <ProjectCard project={project} clients={clients} />)}
     </div>
   ) : (

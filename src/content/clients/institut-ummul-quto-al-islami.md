@@ -6,7 +6,7 @@ industry: "Education"
 website: "https://iuqibogor.ac.id"
 relationship: "Maintenance server, aplikasi dan SEO Optimization"
 testimonial: ""
-order: 1
+order: 2
 isPublic: true
 isPublished: true
 isFeatured: true

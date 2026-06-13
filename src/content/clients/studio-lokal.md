@@ -8,8 +8,8 @@ relationship: "Landing page dan SEO teknis"
 testimonial: ""
 order: 2
 isPublic: true
-isPublished: true
-isFeatured: true
+isPublished: false
+isFeatured: false
 coverImage: ""
 ---
 

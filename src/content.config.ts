@@ -13,31 +13,36 @@ const projectLinks = z
 
 const projects = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/projects" }),
-  schema: z
-    .object({
-      title: z.string(),
-      slug: z.string().refine((value) => value !== "personal", {
-        message: "Project slug `personal` is reserved for /projects/personal"
-      }),
-      clientSlug: z.string().optional(),
-      isPublished: z.boolean().default(true),
-      isFeatured: z.boolean().default(false),
-      summary: z.string(),
-      problem: z.string(),
-      solution: z.string(),
-      role: z.array(z.string()).default([]),
-      stack: z.array(z.string()).default([]),
-      year: z.number(),
-      industry: z.array(z.string()).default([]),
-      coverImage: z.string().optional(),
-      gallery: z.array(z.string()).default([]),
-      demoUrl: z.url().optional(),
-      outcomes: z.array(z.string()).default([]),
-      links: projectLinks
-    })
-    .refine((data) => data.slug.length > 0, {
-      message: "Project slug is required"
-    })
+  schema: ({ image }) =>
+    z
+      .object({
+        title: z.string(),
+        slug: z.string().refine((value) => value !== "personal", {
+          message: "Project slug `personal` is reserved for /projects/personal"
+        }),
+        clientSlug: z.string().optional(),
+        isPublished: z.boolean().default(true),
+        isFeatured: z.boolean().default(false),
+        summary: z.string().optional(),
+        role: z.array(z.string()).default([]),
+        stack: z.array(z.string()).default([]),
+        year: z.number(),
+        industry: z.array(z.string()).default([]),
+        coverImage: image().optional(),
+        gallery: z
+          .array(
+            z.object({
+              image: image(),
+              caption: z.string().optional()
+            })
+          )
+          .default([]),
+        demoUrl: z.url().optional(),
+        links: projectLinks
+      })
+      .refine((data) => data.slug.length > 0, {
+        message: "Project slug is required"
+      })
 });
 
 const blog = defineCollection({
@@ -89,7 +94,7 @@ const clients = defineCollection({
       isPublished: z.boolean().default(true),
       isFeatured: z.boolean().default(false),
       coverImage: image().optional()
-  })
+    })
 });
 
 export const collections = { projects, blog, services, clients };

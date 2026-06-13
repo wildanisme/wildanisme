@@ -8,8 +8,8 @@ relationship: "Maintenance website dan deploy"
 testimonial: "Bug dan proses deploy jadi lebih jelas. Komunikasinya praktis, hasilnya mudah kami rawat."
 order: 1
 isPublic: true
-isPublished: true
-isFeatured: true
+isPublished: false
+isFeatured: false
 coverImage: ""
 ---
 

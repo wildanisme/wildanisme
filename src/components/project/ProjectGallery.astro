@@ -1,0 +1,189 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+
+type GalleryItem = CollectionEntry<"projects">["data"]["gallery"][number];
+
+interface Props {
+  gallery: GalleryItem[];
+  projectSlug: string;
+  projectTitle: string;
+}
+
+const { gallery, projectSlug, projectTitle } = Astro.props;
+---
+
+{
+  gallery.length > 0 && (
+    <section aria-labelledby="project-gallery-heading" data-gallery-root>
+      <h2 id="project-gallery-heading">Galeri</h2>
+      <div class="grid gap-4 md:grid-cols-2">
+        {gallery.map((item, index) => {
+          const dialogId = `project-gallery-${projectSlug}-${index}`;
+          const caption = item.caption ?? `Dokumentasi project ${projectTitle} ${index + 1}`;
+          const hasMultipleImages = gallery.length > 1;
+
+          return (
+            <>
+              <figure class="m-0 overflow-hidden rounded-card bg-surface shadow-brutal-sm [border:var(--border-strong)]">
+                <button
+                  class="group block w-full cursor-zoom-in bg-surface text-left"
+                  type="button"
+                  data-gallery-open={index}
+                  aria-label={`Buka gambar: ${caption}`}
+                >
+                  <Image
+                    class="aspect-video w-full object-cover transition duration-200 group-hover:scale-[1.015]"
+                    src={item.image}
+                    alt={caption}
+                    loading="lazy"
+                  />
+                </button>
+                <figcaption class="border-t-[3px] border-text-primary bg-surface-muted px-4 py-3 text-center text-sm font-extrabold leading-snug text-text-secondary">
+                  {caption}
+                </figcaption>
+              </figure>
+
+              <dialog
+                id={dialogId}
+                data-gallery-dialog
+                data-gallery-index={index}
+                class="m-auto w-[min(1080px,calc(100vw_-_24px))] max-w-none rounded-card bg-background p-0 text-text-primary shadow-brutal [border:var(--border-strong)] [&::backdrop]:bg-text-primary/75"
+                aria-label={caption}
+              >
+                <div class="grid max-h-[calc(100vh_-_32px)] gap-4 overflow-y-auto p-4 md:p-5">
+                  <div class="flex items-start justify-between gap-4">
+                    <p class="m-0 text-sm font-black text-text-secondary">
+                      Gambar {index + 1} dari {gallery.length}
+                    </p>
+                    <form method="dialog">
+                      <button
+                        class="inline-grid size-10 place-items-center rounded-full bg-surface font-black shadow-brutal-sm [border:var(--border-strong)]"
+                        type="submit"
+                        data-gallery-close
+                        aria-label="Tutup galeri"
+                      >
+                        x
+                      </button>
+                    </form>
+                  </div>
+                  <Image
+                    class="max-h-[72vh] w-full rounded-card object-contain [border:var(--border-strong)]"
+                    src={item.image}
+                    alt={caption}
+                    loading="lazy"
+                  />
+                  <div class="grid items-center gap-3 md:grid-cols-[auto_minmax(0,1fr)_auto]">
+                    {
+                      hasMultipleImages && (
+                        <button
+                          class="inline-flex min-h-11 items-center justify-center rounded-full bg-surface px-4 py-2.5 font-black shadow-brutal-sm [border:var(--border-strong)]"
+                          type="button"
+                          data-gallery-prev={index}
+                          aria-label="Lihat gambar sebelumnya"
+                        >
+                          &lt; Prev
+                        </button>
+                      )
+                    }
+                    <p class="m-0 text-center text-base font-black leading-snug text-text-secondary">{caption}</p>
+                    {
+                      hasMultipleImages && (
+                        <button
+                          class="inline-flex min-h-11 items-center justify-center rounded-full bg-surface px-4 py-2.5 font-black shadow-brutal-sm [border:var(--border-strong)]"
+                          type="button"
+                          data-gallery-next={index}
+                          aria-label="Lihat gambar berikutnya"
+                        >
+                          Next &gt;
+                        </button>
+                      )
+                    }
+                  </div>
+                </div>
+              </dialog>
+            </>
+          );
+        })}
+      </div>
+    </section>
+  )
+}
+
+<script>
+  document.querySelectorAll("[data-gallery-root]").forEach((root) => {
+    const dialogs = Array.from(root.querySelectorAll("[data-gallery-dialog]")).filter(
+      (dialog): dialog is HTMLDialogElement => dialog instanceof HTMLDialogElement
+    );
+
+    const openDialog = (index: number) => {
+      const dialog = dialogs[index];
+
+      if (!dialog) {
+        return;
+      }
+
+      dialogs.forEach((item) => {
+        if (item !== dialog && item.open) {
+          item.close();
+        }
+      });
+
+      if (dialog.open) {
+        return;
+      }
+
+      if (typeof dialog.showModal === "function") {
+        dialog.showModal();
+      } else {
+        dialog.setAttribute("open", "");
+      }
+
+      const closeButton = dialog.querySelector("[data-gallery-close]");
+      if (closeButton instanceof HTMLElement) {
+        closeButton.focus();
+      }
+    };
+
+    const getNextIndex = (index: number) => (index + 1) % dialogs.length;
+    const getPreviousIndex = (index: number) => (index - 1 + dialogs.length) % dialogs.length;
+
+    root.querySelectorAll("[data-gallery-open]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        openDialog(Number(trigger.getAttribute("data-gallery-open")));
+      });
+    });
+
+    root.querySelectorAll("[data-gallery-prev]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        openDialog(getPreviousIndex(Number(trigger.getAttribute("data-gallery-prev"))));
+      });
+    });
+
+    root.querySelectorAll("[data-gallery-next]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        openDialog(getNextIndex(Number(trigger.getAttribute("data-gallery-next"))));
+      });
+    });
+
+    dialogs.forEach((dialog, index) => {
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) {
+          dialog.close();
+        }
+      });
+
+      dialog.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          openDialog(getPreviousIndex(index));
+        }
+
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          openDialog(getNextIndex(index));
+        }
+      });
+    });
+  });
+</script>

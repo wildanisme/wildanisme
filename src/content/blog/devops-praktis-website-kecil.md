@@ -6,8 +6,8 @@ publishedAt: 2026-03-04
 updatedAt: 2026-03-04
 tags: ["DevOps", "Deployment", "CI/CD"]
 category: "DevOps"
-isPublished: true
-isFeatured: true
+isPublished: false
+isFeatured: false
 author: "Wildan Taufiq Abdul Aziz"
 ---
 

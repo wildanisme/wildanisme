@@ -2,21 +2,15 @@
 title: "Deployment Pipeline untuk Website Retail"
 slug: "deployment-pipeline-retail"
 clientSlug: "nusantara-retail"
-isPublished: true
-isFeatured: true
+isPublished: false
+isFeatured: false
 summary: "Merapikan deploy aplikasi supaya rilis website tidak jadi acara tahan napas."
-problem: "Proses deploy masih manual, dokumentasi tercecer, dan rollback belum jelas saat error muncul."
-solution: "Merapikan pipeline deploy, memisahkan environment variable, dan menulis checklist rollback yang bisa diikuti."
 role: ["Sysadmin/DevOps dan web developer"]
 stack: ["Cloudflare Pages", "GitHub Actions", "Astro", "TypeScript"]
 year: 2026
 industry: ["Retail"]
 gallery: []
 demoUrl: "https://example.com"
-outcomes:
-  - "Deploy lebih konsisten dan mudah dilacak."
-  - "Checklist rollback tersedia untuk kondisi darurat."
-  - "Tim non-teknis lebih mudah memahami status rilis."
 links:
   - label: "Demo"
     url: "https://example.com"

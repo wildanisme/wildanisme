@@ -8,7 +8,7 @@ relationship: "Deploy aplikasi dan hardening server"
 testimonial: ""
 order: 3
 isPublic: false
-isPublished: true
+isPublished: false
 isFeatured: false
 coverImage: ""
 ---

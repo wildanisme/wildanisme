@@ -49,6 +49,28 @@ const client = getClient(clients, project.data.clientSlug);
     </div>
   </div>
   {
+    project.data.links.length > 0 && (
+      <div>
+        <span class="mb-2 block text-[0.82rem] font-extrabold text-text-secondary">Tautan</span>
+        <ul class="grid gap-2">
+          {project.data.links.map((link) => (
+            <li>
+              <a
+                class="inline-flex w-full items-center justify-between gap-3 rounded-card bg-surface-muted px-3 py-2.5 font-black underline decoration-2 underline-offset-4 transition-[transform,box-shadow,background] duration-150 ease-in-out [border:var(--border-strong)] hover:translate-x-px hover:translate-y-px hover:bg-accent-soft hover:[box-shadow:1px_1px_0_var(--color-text-primary)]"
+                href={link.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span>{link.label}</span>
+                <span aria-hidden="true">-&gt;</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+  {
     project.data.demoUrl && (
       <Button href={project.data.demoUrl} variant="primary">
         Lihat demo

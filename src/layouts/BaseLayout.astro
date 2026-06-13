@@ -9,7 +9,7 @@ interface Props {
   title?: string;
   description?: string;
   canonical?: string;
-  image?: string;
+  image?: ImageMetadata | string;
   robots?: string;
   structuredData?: unknown | unknown[];
 }
@@ -25,7 +25,8 @@ const {
 
 const pageTitle = title === site.title ? title : `${title} - ${site.brand}`;
 const canonicalUrl = new URL(canonical, site.url).toString();
-const imageUrl = new URL(image, site.url).toString();
+const imagePath = typeof image === "string" ? image : image.src;
+const imageUrl = new URL(imagePath, site.url).toString();
 const jsonLdItems = [
   personJsonLd(),
   websiteJsonLd(),

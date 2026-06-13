@@ -1,16 +1,18 @@
 ---
-title: "Company Profile untuk Studio Lokal"
-slug: "company-profile-studio"
-clientSlug: "studio-lokal"
-isPublished: false
-isFeatured: false
-summary: "Website company profile yang menonjolkan layanan, portfolio, dan jalur kontak tanpa bikin pengunjung mikir terlalu lama."
-role: ["Web developer"]
-stack: ["Astro", "Tailwind CSS", "Markdown", "SEO"]
-year: 2025
-industry: ["Creative service"]
+title: "Pengembangan Aplikasi Layanan Kursus"
+slug: "pengembangan-aplikasi-layanan-kursus"
+clientSlug: "kemendikdasmen"
+isPublished: true
+isFeatured: true
+summary: "Layanan Kursus merupakan aplikasi berbasis web yang dikembangkan untuk pengajuan bantuan untuk Lembaga kursus dan PKBM. "
+role: ["Full Stack Developer"]
+stack: ["Laravel", "Alpine.js", "SQL Server"]
+year: 2026
+industry: ["Education"]
 gallery: []
-links: []
+links:
+  - label: "Website"
+    url: "https://layanankursus.kemendikdasmen.go.id"
 ---
 
 ## Ringkasan
