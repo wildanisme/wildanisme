@@ -1,4 +1,4 @@
-export type ToolCategory = "DNS" | "Domain" | "SSL" | "HTTP" | "Email" | "IP";
+export type ToolCategory = "DNS" | "Domain" | "SSL" | "HTTP" | "Email" | "IP" | "Utility";
 
 export interface ToolDefinition {
   slug: string;
@@ -17,6 +17,34 @@ export interface ToolDefinition {
 }
 
 export const tools: ToolDefinition[] = [
+  {
+    slug: "link-to-qr-code",
+    title: "Link to QR Code",
+    category: "Utility",
+    summary: "Ubah URL menjadi QR code yang bisa diunduh sebagai PNG atau SVG.",
+    description:
+      "Tool kecil untuk membuat QR code dari sebuah link. Cocok untuk poster, kartu nama, brosur, slide presentasi, atau kebutuhan share URL tanpa ngetik panjang-panjang.",
+    bestFor: ["Membuat QR untuk link website", "Menyiapkan QR event atau materi promosi", "Download QR sebagai PNG/SVG"],
+    inputs: ["URL lengkap, contoh: https://wildanisme.com"],
+    checks: ["Validasi URL", "Generate QR di browser", "Download PNG", "Download SVG"],
+    output: ["Preview QR code", "File PNG", "File SVG", "URL yang dipakai sebagai isi QR"],
+    nodeRuntime: ["qrcode", "HTMLCanvasElement", "Blob", "URL.createObjectURL()"],
+    astroNote:
+      "Tool ini berjalan client-side di browser. Astro tetap membuat halaman cepat dan SEO-friendly, sementara proses QR tidak perlu menyentuh endpoint server.",
+    exampleCode: `import QRCode from "qrcode";
+
+const canvas = document.querySelector("canvas");
+await QRCode.toCanvas(canvas, "https://wildanisme.com", {
+  width: 360,
+  margin: 2,
+  errorCorrectionLevel: "M"
+});`,
+    limitations: [
+      "QR hanya merepresentasikan link, bukan memvalidasi keamanan link tersebut.",
+      "Semakin panjang URL, QR makin padat dan lebih sulit discan.",
+      "Download PNG/SVG bergantung pada dukungan browser pengguna."
+    ]
+  },
   {
     slug: "dns-lookup",
     title: "DNS Lookup",

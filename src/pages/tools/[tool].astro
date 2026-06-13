@@ -4,6 +4,7 @@ import PageHeader from "@components/shared/PageHeader.astro";
 import Section from "@components/shared/Section.astro";
 import Button from "@components/shared/Button.astro";
 import Badge from "@components/shared/Badge.astro";
+import LinkQrCodeTool from "@components/tools/LinkQrCodeTool.astro";
 import { tools } from "@data/tools";
 import { site } from "@data/site";
 import { breadcrumbJsonLd } from "@lib/structured-data";
@@ -16,12 +17,18 @@ export function getStaticPaths() {
 }
 
 const { tool } = Astro.props;
+const isQrTool = tool.slug === "link-to-qr-code";
 const toolUrl = new URL(`/tools/${tool.slug}`, site.url).toString();
 const relatedTools = tools
   .filter((item) => item.slug !== tool.slug && item.category === tool.category)
   .slice(0, 3);
 const recordOptions = ["A", "AAAA", "NS", "MX", "TXT", "CAA", "SOA"];
 const formConfigBySlug: Record<string, { label: string; placeholder: string; helper: string }> = {
+  "link-to-qr-code": {
+    label: "URL",
+    placeholder: "https://wildanisme.com",
+    helper: "Masukkan link, lalu generate QR code langsung di browser. Tidak ada request ke server untuk isi QR."
+  },
   "dns-lookup": {
     label: "Domain atau subdomain",
     placeholder: "wildanisme.com",
@@ -101,92 +108,100 @@ const structuredData = breadcrumbJsonLd([
             <p class="m-0 max-w-[68ch] leading-[1.65] text-text-secondary">{formConfig.helper}</p>
           </div>
 
-          <form class="grid gap-4" data-tool-form data-tool-slug={tool.slug}>
-            <div class="grid gap-2">
-              <label class="text-[0.92rem] font-black" for="tool-target">{formConfig.label}</label>
-              <input
-                id="tool-target"
-                class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] placeholder:text-text-muted focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
-                name="target"
-                placeholder={formConfig.placeholder}
-                required
-                type="text"
-              />
-            </div>
+          {
+            isQrTool ? (
+              <LinkQrCodeTool />
+            ) : (
+              <>
+                <form class="grid gap-4" data-tool-form data-tool-slug={tool.slug}>
+                  <div class="grid gap-2">
+                    <label class="text-[0.92rem] font-black" for="tool-target">{formConfig.label}</label>
+                    <input
+                      id="tool-target"
+                      class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] placeholder:text-text-muted focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+                      name="target"
+                      placeholder={formConfig.placeholder}
+                      required
+                      type="text"
+                    />
+                  </div>
 
-            {
-              tool.slug === "dns-propagation" && (
-                <div class="grid gap-2">
-                  <label class="text-[0.92rem] font-black" for="tool-record">Record</label>
-                  <select
-                    id="tool-record"
-                    class="min-h-12 w-full rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
-                    name="record"
-                  >
-                    {recordOptions.map((record) => (
-                      <option value={record}>{record}</option>
-                    ))}
-                  </select>
+                  {
+                    tool.slug === "dns-propagation" && (
+                      <div class="grid gap-2">
+                        <label class="text-[0.92rem] font-black" for="tool-record">Record</label>
+                        <select
+                          id="tool-record"
+                          class="min-h-12 w-full rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+                          name="record"
+                        >
+                          {recordOptions.map((record) => (
+                            <option value={record}>{record}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )
+                  }
+
+                  {
+                    tool.slug === "email-auth-check" && (
+                      <div class="grid gap-2">
+                        <label class="text-[0.92rem] font-black" for="tool-selector">Selector DKIM</label>
+                        <input
+                          id="tool-selector"
+                          class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] placeholder:text-text-muted focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+                          name="selector"
+                          placeholder="default"
+                          type="text"
+                        />
+                      </div>
+                    )
+                  }
+
+                  {
+                    tool.slug === "ssl-expiry" && (
+                      <div class="grid gap-2">
+                        <label class="text-[0.92rem] font-black" for="tool-port">Port</label>
+                        <input
+                          id="tool-port"
+                          class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] placeholder:text-text-muted focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+                          inputmode="numeric"
+                          max="65535"
+                          min="1"
+                          name="port"
+                          placeholder="443"
+                          type="number"
+                        />
+                      </div>
+                    )
+                  }
+
+                  <div class="flex flex-wrap items-center gap-3">
+                    <button
+                      class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-card bg-primary px-5 py-2.5 text-[0.95rem] font-black text-gray-800 shadow-brutal-sm transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 [border:var(--border-strong)]"
+                      data-tool-submit
+                      type="submit"
+                    >
+                      Jalankan cek
+                    </button>
+                    <p class="m-0 text-[0.92rem] font-bold text-text-secondary" data-tool-status role="status">
+                      Siap ngecek. Masukkan target dulu.
+                    </p>
+                  </div>
+                </form>
+
+                <div class="mt-5 hidden rounded-card bg-code-surface p-4 text-white [border:var(--border-strong)]" data-tool-result>
+                  <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="m-0 text-[1rem] font-black">Output</h3>
+                    <span class="rounded-full bg-accent px-2.5 py-1 text-[0.78rem] font-black text-text-primary [border:var(--border-strong)]">
+                      JSON
+                    </span>
+                  </div>
+                  <pre class="m-0 max-h-[520px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-card bg-[#151a18] p-4 text-[0.82rem] leading-[1.65]"><code data-tool-output></code></pre>
                 </div>
-              )
-            }
-
-            {
-              tool.slug === "email-auth-check" && (
-                <div class="grid gap-2">
-                  <label class="text-[0.92rem] font-black" for="tool-selector">Selector DKIM</label>
-                  <input
-                    id="tool-selector"
-                    class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] placeholder:text-text-muted focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
-                    name="selector"
-                    placeholder="default"
-                    type="text"
-                  />
-                </div>
-              )
-            }
-
-            {
-              tool.slug === "ssl-expiry" && (
-                <div class="grid gap-2">
-                  <label class="text-[0.92rem] font-black" for="tool-port">Port</label>
-                  <input
-                    id="tool-port"
-                    class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] placeholder:text-text-muted focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
-                    inputmode="numeric"
-                    max="65535"
-                    min="1"
-                    name="port"
-                    placeholder="443"
-                    type="number"
-                  />
-                </div>
-              )
-            }
-
-            <div class="flex flex-wrap items-center gap-3">
-              <button
-                class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-card bg-primary px-5 py-2.5 text-[0.95rem] font-black text-gray-800 shadow-brutal-sm transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 [border:var(--border-strong)]"
-                data-tool-submit
-                type="submit"
-              >
-                Jalankan cek
-              </button>
-              <p class="m-0 text-[0.92rem] font-bold text-text-secondary" data-tool-status role="status">
-                Siap ngecek. Masukkan target dulu.
-              </p>
-            </div>
-          </form>
-
-          <div class="mt-5 hidden rounded-card bg-code-surface p-4 text-white [border:var(--border-strong)]" data-tool-result>
-            <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <h3 class="m-0 text-[1rem] font-black">Output</h3>
-              <span class="rounded-full bg-accent px-2.5 py-1 text-[0.78rem] font-black text-text-primary [border:var(--border-strong)]">
-                JSON
-              </span>
-            </div>
-            <pre class="m-0 max-h-[520px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-card bg-[#151a18] p-4 text-[0.82rem] leading-[1.65]"><code data-tool-output></code></pre>
-          </div>
+              </>
+            )
+          }
         </section>
 
         <section class="w-full min-w-0 max-w-full overflow-hidden rounded-card bg-surface p-5 shadow-brutal [border:var(--border-strong)]">

@@ -1,0 +1,194 @@
+<form class="grid gap-4" data-qr-form>
+  <div class="grid gap-2">
+    <label class="text-[0.92rem] font-black" for="qr-url">URL</label>
+    <input
+      id="qr-url"
+      class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] placeholder:text-text-muted focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+      name="url"
+      placeholder="https://wildanisme.com"
+      required
+      type="url"
+    />
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <div class="grid gap-2">
+      <label class="text-[0.92rem] font-black" for="qr-size">Ukuran</label>
+      <input
+        id="qr-size"
+        class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+        inputmode="numeric"
+        max="1200"
+        min="160"
+        name="size"
+        step="20"
+        type="number"
+        value="420"
+      />
+    </div>
+    <div class="grid gap-2">
+      <label class="text-[0.92rem] font-black" for="qr-margin">Margin</label>
+      <input
+        id="qr-margin"
+        class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+        inputmode="numeric"
+        max="8"
+        min="0"
+        name="margin"
+        type="number"
+        value="2"
+      />
+    </div>
+    <div class="grid gap-2">
+      <label class="text-[0.92rem] font-black" for="qr-error-level">Error correction</label>
+      <select
+        id="qr-error-level"
+        class="min-h-12 w-full rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+        name="errorLevel"
+      >
+        <option value="L">L - ringan</option>
+        <option value="M" selected>M - aman</option>
+        <option value="Q">Q - kuat</option>
+        <option value="H">H - paling tahan</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <button
+      class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-card bg-primary px-5 py-2.5 text-[0.95rem] font-black text-gray-800 shadow-brutal-sm transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 [border:var(--border-strong)]"
+      data-qr-submit
+      type="submit"
+    >
+      Generate QR
+    </button>
+    <p class="m-0 text-[0.92rem] font-bold text-text-secondary" data-qr-status role="status">
+      Masukkan link dulu. QR-nya muncul di sini, bukan dikirim ke server.
+    </p>
+  </div>
+</form>
+
+<div class="mt-5 hidden rounded-card bg-surface p-5 shadow-brutal-sm [border:var(--border-strong)]" data-qr-result>
+  <div class="grid gap-5 lg:grid-cols-[minmax(220px,360px)_minmax(0,1fr)]">
+    <div class="grid place-items-center rounded-card bg-background p-4 [border:var(--border-strong)]">
+      <canvas class="h-auto max-w-full" data-qr-canvas aria-label="QR code preview"></canvas>
+    </div>
+    <div class="grid content-start gap-4">
+      <div>
+        <h3 class="m-0 text-[1.15rem] font-black">Output</h3>
+        <p class="m-0 mt-2 break-all leading-[1.65] text-text-secondary" data-qr-url></p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button
+          class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-card bg-accent px-4 py-2.5 font-black shadow-brutal-sm transition hover:-translate-y-0.5 [border:var(--border-strong)]"
+          data-qr-download-png
+          type="button"
+        >
+          Download PNG
+        </button>
+        <button
+          class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-card bg-surface px-4 py-2.5 font-black shadow-brutal-sm transition hover:-translate-y-0.5 [border:var(--border-strong)]"
+          data-qr-download-svg
+          type="button"
+        >
+          Download SVG
+        </button>
+      </div>
+      <p class="m-0 text-sm font-bold leading-[1.6] text-text-muted">
+        Catatan: QR ini hanya menyimpan URL. Tool ini tidak mengecek apakah link aman atau tidak.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import QRCode from "qrcode";
+
+  const form = document.querySelector<HTMLFormElement>("[data-qr-form]");
+  const result = document.querySelector<HTMLElement>("[data-qr-result]");
+  const canvas = document.querySelector<HTMLCanvasElement>("[data-qr-canvas]");
+  const statusText = document.querySelector<HTMLElement>("[data-qr-status]");
+  const urlOutput = document.querySelector<HTMLElement>("[data-qr-url]");
+  const pngButton = document.querySelector<HTMLButtonElement>("[data-qr-download-png]");
+  const svgButton = document.querySelector<HTMLButtonElement>("[data-qr-download-svg]");
+
+  let currentUrl = "";
+  let currentSvg = "";
+
+  const normalizeQrUrl = (value: string) => {
+    const raw = value.trim();
+    const url = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
+
+    if (!["http:", "https:"].includes(url.protocol)) {
+      throw new Error("URL harus memakai http atau https.");
+    }
+
+    return url.toString();
+  };
+
+  const getNumber = (formData: FormData, key: string, fallback: number, min: number, max: number) => {
+    const value = Number(formData.get(key));
+    if (!Number.isFinite(value)) return fallback;
+    return Math.min(max, Math.max(min, Math.round(value)));
+  };
+
+  const getFileName = (url: string, extension: "png" | "svg") => {
+    const host = new URL(url).hostname.replace(/[^a-z0-9-]+/gi, "-").replace(/^-|-$/g, "");
+    return `qr-${host || "link"}.${extension}`;
+  };
+
+  const downloadBlob = (blob: Blob, fileName: string) => {
+    const href = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(href);
+  };
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!form || !result || !canvas || !statusText || !urlOutput) return;
+
+    const formData = new FormData(form);
+    const size = getNumber(formData, "size", 420, 160, 1200);
+    const margin = getNumber(formData, "margin", 2, 0, 8);
+    const errorLevel = String(formData.get("errorLevel") || "M") as "L" | "M" | "Q" | "H";
+
+    try {
+      currentUrl = normalizeQrUrl(String(formData.get("url") || ""));
+      const options = {
+        width: size,
+        margin,
+        errorCorrectionLevel: errorLevel,
+        color: {
+          dark: "#111816",
+          light: "#f7fbf8"
+        }
+      } as const;
+
+      await QRCode.toCanvas(canvas, currentUrl, options);
+      currentSvg = await QRCode.toString(currentUrl, { ...options, type: "svg" });
+
+      urlOutput.textContent = currentUrl;
+      result.classList.remove("hidden");
+      statusText.textContent = "QR siap. Tinggal download sesuai kebutuhan.";
+    } catch (error) {
+      statusText.textContent = error instanceof Error ? error.message : "QR gagal dibuat.";
+    }
+  });
+
+  pngButton?.addEventListener("click", () => {
+    if (!canvas || !currentUrl) return;
+
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      downloadBlob(blob, getFileName(currentUrl, "png"));
+    }, "image/png");
+  });
+
+  svgButton?.addEventListener("click", () => {
+    if (!currentSvg || !currentUrl) return;
+    downloadBlob(new Blob([currentSvg], { type: "image/svg+xml" }), getFileName(currentUrl, "svg"));
+  });
+</script>
