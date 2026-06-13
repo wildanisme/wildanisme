@@ -2,6 +2,7 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import Button from "@components/shared/Button.astro";
 import Badge from "@components/shared/Badge.astro";
+import EmailLink from "@components/shared/EmailLink.astro";
 import { site } from "@data/site";
 ---
 
@@ -23,7 +24,7 @@ import { site } from "@data/site";
     </div>
     <div class="brutal-panel grid gap-4 p-6">
       <span class="font-extrabold text-text-secondary">Email</span>
-      <a class="text-[1.22rem] font-black underline decoration-[3px] underline-offset-[6px] md:text-[1.8rem]" href={`mailto:${site.email}`}>{site.email}</a>
+      <EmailLink email={site.email} class="text-[1.22rem] font-black underline decoration-[3px] underline-offset-[6px] md:text-[1.8rem]" />
       <p class="m-0 leading-[1.7] text-text-secondary">{site.responseTime}</p>
       <div class="flex flex-wrap gap-3">
         {site.socialLinks.map((link) => <Button href={link.url} variant="secondary">{link.label}</Button>)}

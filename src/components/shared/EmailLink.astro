@@ -1,0 +1,23 @@
+---
+interface Props {
+  email: string;
+  class?: string;
+}
+
+const { email, class: className = "" } = Astro.props;
+
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
+const safeEmail = escapeHtml(email);
+const safeClass = escapeHtml(className);
+const safeHref = escapeHtml(`mailto:${email}`);
+const emailLinkHtml = `<!--email_off--><a class="${safeClass}" href="${safeHref}">${safeEmail}</a><!--/email_off-->`;
+---
+
+<Fragment set:html={emailLinkHtml} />

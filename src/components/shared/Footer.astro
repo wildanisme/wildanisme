@@ -1,6 +1,7 @@
 ---
 import { navigation, partnersProducts } from "@data/navigation";
 import { site } from "@data/site";
+import EmailLink from "@components/shared/EmailLink.astro";
 ---
 
 <footer class="mt-24 border-t-[5px] border-text-primary bg-inherit">
@@ -39,7 +40,7 @@ import { site } from "@data/site";
         </div>
         <div>
             <h3 class="text-lg font-black uppercase text-gray-950 tracking-wider mb-4">Kontak</h3>
-            <a class="block font-black text-gray-800 hover:text-accent-secondary transition-colors" href={`mailto:${site.email}`}>{site.email}</a>
+            <EmailLink email={site.email} class="block font-black text-gray-800 hover:text-accent-secondary transition-colors" />
             <a class="block font-black text-gray-800 hover:text-accent-secondary transition-colors" href={`https://wa.me/${site.whatsApp}`}>{site.whatsApp}</a>
             <p class="text-gray-950">{site.responseTime}</p>
         </div>
