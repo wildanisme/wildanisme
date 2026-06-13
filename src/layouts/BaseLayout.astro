@@ -3,6 +3,7 @@ import Header from "@components/shared/Header.astro";
 import Footer from "@components/shared/Footer.astro";
 import { site } from "@data/site";
 import { personJsonLd, websiteJsonLd } from "@lib/structured-data";
+import { ClientRouter } from "astro:transitions";
 import "@styles/global.css";
 
 interface Props {
@@ -34,6 +35,7 @@ const imageType = imagePath.toLowerCase().endsWith(".png")
   : imagePath.toLowerCase().endsWith(".jpg") || imagePath.toLowerCase().endsWith(".jpeg")
     ? "image/jpeg"
     : "image/png";
+const shouldRegisterServiceWorker = import.meta.env.PROD;
 const jsonLdItems = [
   personJsonLd(),
   websiteJsonLd(),
@@ -67,7 +69,16 @@ const jsonLdItems = [
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
     <meta name="twitter:image:alt" content={pageTitle} />
+    <meta name="theme-color" content="#00b894" />
+    <meta name="application-name" content={site.brand} />
+    <meta name="apple-mobile-web-app-title" content={site.brand} />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <ClientRouter fallback="swap" />
     <script is:inline>
       (() => {
         const allowedBackgrounds = new Set(["flat", "dots", "noise", "diagonal", "blocks", "best"]);
@@ -79,6 +90,18 @@ const jsonLdItems = [
       jsonLdItems.map((item) => (
         <script is:inline type="application/ld+json" set:html={JSON.stringify(item)} />
       ))
+    }
+    {
+      shouldRegisterServiceWorker && (
+        <script
+          is:inline
+          set:html={`if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js").catch(() => {});
+  });
+}`}
+        />
+      )
     }
   </head>
   <body>

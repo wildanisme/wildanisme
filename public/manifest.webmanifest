@@ -1,0 +1,49 @@
+{
+  "name": "wildanisme",
+  "short_name": "wildanisme",
+  "description": "Tools, portfolio, dan catatan Web Development, Sysadmin/DevOps, dan SEO teknis dari Wildan Taufiq Abdul Aziz.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f8f5",
+  "theme_color": "#00b894",
+  "lang": "id",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tools",
+      "short_name": "Tools",
+      "description": "Buka tools domain, DNS, server, dan QR code.",
+      "url": "/tools",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Portfolio",
+      "short_name": "Portfolio",
+      "description": "Lihat project yang pernah dikerjakan.",
+      "url": "/projects",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

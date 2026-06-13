@@ -7,6 +7,10 @@ import rehypeCallouts from "rehype-callouts";
 export default defineConfig({
   site: "https://wildanisme.com",
   adapter: netlify(),
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "viewport"
+  },
   vite: {
     plugins: [tailwindcss()]
   },

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#00b894" />
+    <title>Offline - wildanisme</title>
+    <style>
+      :root {
+        color: #151a18;
+        background: #f7f8f5;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      body {
+        display: grid;
+        min-height: 100vh;
+        margin: 0;
+        place-items: center;
+        padding: 24px;
+      }
+
+      main {
+        width: min(680px, 100%);
+        border: 3px solid #151a18;
+        border-radius: 8px;
+        background: #ffffff;
+        box-shadow: 6px 6px 0 #151a18;
+        padding: clamp(24px, 6vw, 48px);
+      }
+
+      .badge {
+        display: inline-flex;
+        border: 2px solid #151a18;
+        border-radius: 999px;
+        background: #ddf8f0;
+        padding: 8px 12px;
+        font-weight: 900;
+      }
+
+      h1 {
+        margin: 20px 0 12px;
+        font-size: clamp(2rem, 8vw, 4rem);
+        line-height: 0.95;
+      }
+
+      p {
+        color: #58615d;
+        font-size: 1.05rem;
+        font-weight: 700;
+        line-height: 1.7;
+      }
+
+      a {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        border: 2px solid #151a18;
+        border-radius: 999px;
+        margin-top: 16px;
+        background: #00b894;
+        color: #151a18;
+        font-weight: 900;
+        padding: 10px 16px;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <span class="badge">Offline</span>
+      <h1>Koneksi lagi rehat.</h1>
+      <p>
+        Beberapa halaman yang sudah pernah dibuka masih bisa muncul dari cache. Kalau halaman ini yang tampil,
+        berarti browser belum punya salinan halaman tujuan.
+      </p>
+      <a href="/">Balik ke beranda</a>
+    </main>
+  </body>
+</html>
