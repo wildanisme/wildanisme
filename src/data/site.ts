@@ -8,6 +8,7 @@ export const site = {
   description:
     "wildanisme bantu beresin website yang mulai rewel: maintenance, bug fix, optimasi, deploy aplikasi, hardening server, dan SEO teknis.",
   email: "me@wildanisme.com",
+  whatsApp: "+6281212656699",
   responseTime: "Saya berkomiotmen untuk merespon semua pesan dengan cepat kilat.",
   socialLinks: [
     { label: "GitHub", url: "https://github.com/wildanisme" },
