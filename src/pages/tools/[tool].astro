@@ -91,6 +91,7 @@ const structuredData = breadcrumbJsonLd([
   title={tool.title}
   description={tool.summary}
   canonical={`/tools/${tool.slug}`}
+  image={isQrTool ? "/images/og/link-to-qr-code.png" : undefined}
   structuredData={structuredData}
 >
   <PageHeader eyebrow={tool.category} title={tool.title} description={tool.description}>
