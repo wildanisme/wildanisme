@@ -9,7 +9,9 @@ role: ["Full Stack Developer"]
 stack: ["Laravel", "Alpine.js", "SQL Server"]
 year: 2026
 industry: ["Education"]
-gallery: []
+gallery:
+  - image: "../../assets/images/projects/layanan-kursus/layanan-kursus.png"
+    caption: "Halaman Login"
 links:
   - label: "Website"
     url: "https://layanankursus.kemendikdasmen.go.id"
@@ -17,18 +19,23 @@ links:
 
 ## Ringkasan
 
-Website ini dirancang sebagai company profile yang ringkas, cepat, dan mudah dirawat oleh tim kecil. Tugasnya jelas: bantu calon klien paham, bukan bikin mereka muter-muter.
+Website Layanan Kursus merupakan program Bantuan Pemerintah program PKK dan PKW Tahun 2026 disalurkan melalui lembaga kursus, PKBM, SKB, dan organisasi kemasyarakatan untuk menjangkau anak tidak sekolah dan penganggur usia produktif.
+<br/>
+Tujuannya adalah agar anak tidak sekolah memiliki kecakapan teknis (Hard Skill) yang berguna di dalam dunia kerja maupun wirausaha. Untuk itu, pemerintah hadir memberikan pembiayaan.
 
-## Masalah
+## PKK - Pendidikan Kecakapan Kerja
+Layanan kursus keterampilan yang berorientasi pada kebutuhan dunia kerja, agar peserta didik memiliki kompetensi yang dibuktikan dengan sertifikat kompetensi untuk bekerja dan terserap di dunia kerja.
 
-Informasi layanan sebelumnya tersebar dan belum punya prioritas yang jelas. Calon klien perlu waktu terlalu lama untuk memahami apa yang ditawarkan.
-
-## Solusi
-
-Saya menyusun ulang informasi, membangun halaman layanan, menyiapkan komponen kartu portfolio, dan menambahkan metadata dasar untuk SEO. Bagian yang bikin bingung dipangkas, bagian yang penting dibuat lebih kelihatan.
+## PKW - Pendidikan Kecakapan Wirausaha
+Layanan kursus keterampilan yang membekali pengetahuan, sikap, dan mental wirausaha agar peserta didik mampu merintis usaha mandiri dengan pendampingan lembaga dan mitra usaha.
 
 ## Hasil
 
-- Navigasi lebih langsung.
-- Project dan layanan lebih mudah dipahami.
-- Halaman siap dikembangkan menjadi content hub.
+- Aplikasi berhasil dirilis dan digunakan.
+
+## Referensi
+- [PKK](https://layanankursus.kemendikdasmen.go.id/) 
+- [PKW](https://layanankursus.kemendikdasmen.go.id/)
+
+> [!NOTE] Discalimer
+> Dalam project ini, saya hanya berkontribusi kurang lebih 1 bulan sampai aplikasi dilakukan beta testing dan laungching ke publik.
