@@ -12,33 +12,33 @@ import { proofPoints, site } from "@data/site";
         Stop ngelus dada lihat web error. Waktunya panggil bala bantuan.
       </h1>
       <p class="m-0 max-w-[700px] text-[1.18rem] leading-[1.7] text-text-secondary">
-          Saya <strong>Wildan</strong>, orang di balik <strong>wildanisme.com</strong> Saya bantu maintenance,
-        bug fix, optimasi, deploy aplikasi, hardening server, dan SEO teknis.
-        Santai aja, yang penting masalahnya ketahuan dan fix-nya jelas.
+        Saya <strong>Wildan</strong>, orang di balik <strong>wildanisme.com</strong>. Saya bantu beresin web yang error,
+        server yang rewel, deploy yang bikin waswas, sampai SEO teknis yang kelihatan sepi.
+        Santai aja, yang penting akar masalahnya ketemu dan fix-nya jelas.
       </p>
       <div class="flex flex-wrap gap-3">
         <Button href="/contact">Lapor, web saya aneh!</Button>
         <Button href="/projects" variant="secondary">Lihat kerjaan saya</Button>
       </div>
     </div>
-    <div class="self-stretch overflow-hidden rounded-card bg-surface shadow-brutal [border:var(--border-strong)]" aria-label="Ringkasan profil">
-      <div class="flex gap-2 border-b-[3px] border-text-primary bg-accent p-3.5">
-        <span class="h-3 w-3 rounded-full border-2 border-text-primary bg-surface"></span>
-        <span class="h-3 w-3 rounded-full border-2 border-text-primary bg-surface"></span>
-        <span class="h-3 w-3 rounded-full border-2 border-text-primary bg-surface"></span>
+    <div class="w-full self-center overflow-hidden rounded-card bg-surface shadow-brutal [border:var(--border-strong)]" aria-label="Ringkasan profil">
+      <div class="flex gap-2 border-b-[3px] border-text-primary bg-accent p-3">
+        <span class="h-2.5 w-2.5 rounded-full border-2 border-text-primary bg-surface"></span>
+        <span class="h-2.5 w-2.5 rounded-full border-2 border-text-primary bg-surface"></span>
+        <span class="h-2.5 w-2.5 rounded-full border-2 border-text-primary bg-surface"></span>
       </div>
-      <div class="grid gap-3.5 p-6">
-        <p class="m-0 font-mono text-[0.92rem] text-text-secondary">$ whoami</p>
-        <strong class="text-[1.12rem]">{site.owner}</strong>
-        <p class="m-0 font-mono text-[0.92rem] text-text-secondary">$ role</p>
-        <strong class="text-[1.12rem]">Web Development, Sysadmin/DevOps, SEO</strong>
-        <p class="m-0 font-mono text-[0.92rem] text-text-secondary">$ I fix</p>
-        <strong class="text-[1.12rem]">Bug nyebelin, deploy deg-degan, SEO sepi</strong>
-        <div class="mt-3 grid gap-3">
+      <div class="grid gap-3 p-5">
+        <p class="m-0 font-mono text-[0.82rem] font-bold text-text-secondary">$ whoami</p>
+        <strong class="text-[1rem] leading-snug">{site.owner}</strong>
+        <p class="m-0 font-mono text-[0.82rem] font-bold text-text-secondary">$ role</p>
+        <strong class="text-[1rem] leading-snug">Web Maintenance, Sysadmin/DevOps, SEO Teknis</strong>
+        <p class="m-0 font-mono text-[0.82rem] font-bold text-text-secondary">$ I fix</p>
+        <strong class="text-[1rem] leading-snug">Bug bandel, deploy bikin keringat dingin, SEO yang sunyi senyap</strong>
+        <div class="mt-2 grid gap-2.5">
           {proofPoints.map((item) => (
             <div class="rounded-card border-2 border-text-primary bg-surface-muted p-3">
-              <span class="mb-1 block text-[0.82rem] font-extrabold text-text-secondary">{item.label}</span>
-              <strong>{item.value}</strong>
+              <span class="mb-1 block text-[0.78rem] font-extrabold text-text-secondary">{item.label}</span>
+              <strong class="block text-[0.95rem] leading-snug">{item.value}</strong>
             </div>
           ))}
         </div>
