@@ -3,6 +3,7 @@ export const navigation = [
   { label: "Layanan", href: "/services" },
   { label: "Proyek", href: "/projects" },
   { label: "Klien", href: "/clients" },
+  { label: "Tools", href: "/tools" },
   { label: "Blog", href: "/blog" },
   { label: "Tentang", href: "/about" },
   { label: "Kontak", href: "/contact" }
