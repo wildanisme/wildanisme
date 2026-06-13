@@ -1,0 +1,324 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import PageHeader from "@components/shared/PageHeader.astro";
+import Section from "@components/shared/Section.astro";
+import Button from "@components/shared/Button.astro";
+import Badge from "@components/shared/Badge.astro";
+import { tools } from "@data/tools";
+import { site } from "@data/site";
+import { breadcrumbJsonLd } from "@lib/structured-data";
+
+export function getStaticPaths() {
+  return tools.map((tool) => ({
+    params: { tool: tool.slug },
+    props: { tool }
+  }));
+}
+
+const { tool } = Astro.props;
+const toolUrl = new URL(`/tools/${tool.slug}`, site.url).toString();
+const relatedTools = tools
+  .filter((item) => item.slug !== tool.slug && item.category === tool.category)
+  .slice(0, 3);
+const recordOptions = ["A", "AAAA", "NS", "MX", "TXT", "CAA", "SOA"];
+const formConfigBySlug: Record<string, { label: string; placeholder: string; helper: string }> = {
+  "dns-lookup": {
+    label: "Domain atau subdomain",
+    placeholder: "wildanisme.com",
+    helper: "Masukkan domain tanpa http:// agar record DNS-nya dicek satu per satu."
+  },
+  "dns-propagation": {
+    label: "Domain",
+    placeholder: "wildanisme.com",
+    helper: "Pilih record, lalu bandingkan hasilnya dari beberapa resolver publik."
+  },
+  "domain-age": {
+    label: "Domain root",
+    placeholder: "wildanisme.com",
+    helper: "RDAP biasanya paling rapi untuk melihat event registrasi domain."
+  },
+  "rdap-whois": {
+    label: "Domain atau IP publik",
+    placeholder: "wildanisme.com atau 1.1.1.1",
+    helper: "Lookup ini otomatis memakai RDAP domain atau RDAP IP sesuai target."
+  },
+  "ssl-expiry": {
+    label: "Hostname",
+    placeholder: "wildanisme.com",
+    helper: "Gunakan hostname publik. Target localhost dan IP private sengaja diblokir."
+  },
+  "http-header-check": {
+    label: "URL atau hostname",
+    placeholder: "https://wildanisme.com",
+    helper: "Cek status, redirect, cache, dan security header dari server."
+  },
+  "email-auth-check": {
+    label: "Domain email",
+    placeholder: "wildanisme.com",
+    helper: "SPF dan DMARC bisa dicek langsung. DKIM butuh selector, default-nya default."
+  },
+  "reverse-dns": {
+    label: "IP address",
+    placeholder: "1.1.1.1",
+    helper: "Masukkan IPv4 atau IPv6 untuk mencari PTR/reverse DNS."
+  },
+  "ip-asn-lookup": {
+    label: "IP address",
+    placeholder: "1.1.1.1",
+    helper: "Masukkan IP publik untuk melihat data RDAP jaringan dan pemilik ASN."
+  }
+};
+const formConfig = formConfigBySlug[tool.slug] ?? {
+  label: "Input",
+  placeholder: "wildanisme.com",
+  helper: "Masukkan target yang ingin dicek."
+};
+const structuredData = breadcrumbJsonLd([
+  { name: "Beranda", url: site.url },
+  { name: "Tools", url: new URL("/tools", site.url).toString() },
+  { name: tool.title, url: toolUrl }
+]);
+---
+
+<BaseLayout
+  title={tool.title}
+  description={tool.summary}
+  canonical={`/tools/${tool.slug}`}
+  structuredData={structuredData}
+>
+  <PageHeader eyebrow={tool.category} title={tool.title} description={tool.description}>
+    <div class="flex flex-wrap gap-3">
+      <Button href="/tools" variant="secondary">Lihat semua tools</Button>
+    </div>
+  </PageHeader>
+
+  <Section>
+    <div class="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <article class="grid w-full min-w-0 gap-6">
+        <section class="w-full min-w-0 max-w-full overflow-hidden rounded-card bg-accent-soft p-5 shadow-brutal [border:var(--border-strong)]">
+          <div class="mb-4 grid gap-2">
+            <h2 class="m-0 text-[1.45rem] font-black">Coba langsung</h2>
+            <p class="m-0 max-w-[68ch] leading-[1.65] text-text-secondary">{formConfig.helper}</p>
+          </div>
+
+          <form class="grid gap-4" data-tool-form data-tool-slug={tool.slug}>
+            <div class="grid gap-2">
+              <label class="text-[0.92rem] font-black" for="tool-target">{formConfig.label}</label>
+              <input
+                id="tool-target"
+                class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] placeholder:text-text-muted focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+                name="target"
+                placeholder={formConfig.placeholder}
+                required
+                type="text"
+              />
+            </div>
+
+            {
+              tool.slug === "dns-propagation" && (
+                <div class="grid gap-2">
+                  <label class="text-[0.92rem] font-black" for="tool-record">Record</label>
+                  <select
+                    id="tool-record"
+                    class="min-h-12 w-full rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+                    name="record"
+                  >
+                    {recordOptions.map((record) => (
+                      <option value={record}>{record}</option>
+                    ))}
+                  </select>
+                </div>
+              )
+            }
+
+            {
+              tool.slug === "email-auth-check" && (
+                <div class="grid gap-2">
+                  <label class="text-[0.92rem] font-black" for="tool-selector">Selector DKIM</label>
+                  <input
+                    id="tool-selector"
+                    class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] placeholder:text-text-muted focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+                    name="selector"
+                    placeholder="default"
+                    type="text"
+                  />
+                </div>
+              )
+            }
+
+            {
+              tool.slug === "ssl-expiry" && (
+                <div class="grid gap-2">
+                  <label class="text-[0.92rem] font-black" for="tool-port">Port</label>
+                  <input
+                    id="tool-port"
+                    class="min-h-12 w-full min-w-0 rounded-card bg-background px-4 py-3 font-bold text-text-primary outline-none [border:2px_solid_var(--color-border)] placeholder:text-text-muted focus:[box-shadow:0_0_0_3px_var(--color-accent-soft)]"
+                    inputmode="numeric"
+                    max="65535"
+                    min="1"
+                    name="port"
+                    placeholder="443"
+                    type="number"
+                  />
+                </div>
+              )
+            }
+
+            <div class="flex flex-wrap items-center gap-3">
+              <button
+                class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-card bg-primary px-5 py-2.5 text-[0.95rem] font-black text-gray-800 shadow-brutal-sm transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 [border:var(--border-strong)]"
+                data-tool-submit
+                type="submit"
+              >
+                Jalankan cek
+              </button>
+              <p class="m-0 text-[0.92rem] font-bold text-text-secondary" data-tool-status role="status">
+                Siap ngecek. Masukkan target dulu.
+              </p>
+            </div>
+          </form>
+
+          <div class="mt-5 hidden rounded-card bg-code-surface p-4 text-white [border:var(--border-strong)]" data-tool-result>
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <h3 class="m-0 text-[1rem] font-black">Output</h3>
+              <span class="rounded-full bg-accent px-2.5 py-1 text-[0.78rem] font-black text-text-primary [border:var(--border-strong)]">
+                JSON
+              </span>
+            </div>
+            <pre class="m-0 max-h-[520px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-card bg-[#151a18] p-4 text-[0.82rem] leading-[1.65]"><code data-tool-output></code></pre>
+          </div>
+        </section>
+
+        <section class="w-full min-w-0 max-w-full overflow-hidden rounded-card bg-surface p-5 shadow-brutal [border:var(--border-strong)]">
+          <h2 class="m-0 mb-4 text-[1.45rem] font-black">Fungsi utama</h2>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <h3 class="m-0 mb-2 text-[1rem] font-black">Cocok untuk</h3>
+              <ul class="m-0 grid gap-2 p-0">
+                {tool.bestFor.map((item) => <li class="list-none leading-[1.6] text-text-secondary">- {item}</li>)}
+              </ul>
+            </div>
+            <div>
+              <h3 class="m-0 mb-2 text-[1rem] font-black">Input</h3>
+              <ul class="m-0 grid gap-2 p-0">
+                {tool.inputs.map((item) => <li class="list-none leading-[1.6] text-text-secondary">- {item}</li>)}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="w-full min-w-0 max-w-full overflow-hidden rounded-card bg-surface p-5 shadow-brutal [border:var(--border-strong)]">
+          <h2 class="m-0 mb-4 text-[1.45rem] font-black">Yang dicek</h2>
+          <div class="flex flex-wrap gap-2">
+            {tool.checks.map((check) => <Badge tone="neutral">{check}</Badge>)}
+          </div>
+        </section>
+
+        <section class="w-full min-w-0 max-w-full overflow-hidden rounded-card bg-surface p-5 shadow-brutal [border:var(--border-strong)]">
+          <h2 class="m-0 mb-4 text-[1.45rem] font-black">Output yang ideal</h2>
+          <ul class="m-0 grid gap-2 p-0">
+            {tool.output.map((item) => <li class="list-none leading-[1.6] text-text-secondary">- {item}</li>)}
+          </ul>
+        </section>
+
+        <section class="w-full min-w-0 max-w-full overflow-hidden rounded-card bg-code-surface p-5 text-white shadow-brutal [border:var(--border-strong)]">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 class="m-0 text-[1.45rem] font-black">Contoh implementasi Node</h2>
+            <span class="rounded-full bg-accent px-2.5 py-1 text-[0.78rem] font-black text-text-primary [border:var(--border-strong)]">
+              Astro endpoint ready
+            </span>
+          </div>
+          <pre class="m-0 max-w-full overflow-x-auto rounded-card bg-[#151a18] p-4 text-[0.88rem] leading-[1.7]"><code>{tool.exampleCode}</code></pre>
+        </section>
+      </article>
+
+      <aside class="grid w-full min-w-0 content-start gap-6">
+        <section class="w-full min-w-0 max-w-full overflow-hidden rounded-card bg-accent-soft p-5 shadow-brutal [border:var(--border-strong)]">
+          <h2 class="m-0 mb-3 text-[1.1rem] font-black">Runtime Astro</h2>
+          <p class="m-0 leading-[1.65] text-text-secondary">{tool.astroNote}</p>
+        </section>
+
+        <section class="w-full min-w-0 max-w-full overflow-hidden rounded-card bg-surface p-5 shadow-brutal [border:var(--border-strong)]">
+          <h2 class="m-0 mb-3 text-[1.1rem] font-black">API Node yang dipakai</h2>
+          <ul class="m-0 grid gap-2 p-0">
+            {tool.nodeRuntime.map((item) => <li class="list-none break-words font-bold text-text-secondary">- {item}</li>)}
+          </ul>
+        </section>
+
+        <section class="w-full min-w-0 max-w-full overflow-hidden rounded-card bg-surface p-5 shadow-brutal [border:var(--border-strong)]">
+          <h2 class="m-0 mb-3 text-[1.1rem] font-black">Batasan</h2>
+          <ul class="m-0 grid gap-2 p-0">
+            {tool.limitations.map((item) => <li class="list-none leading-[1.6] text-text-secondary">- {item}</li>)}
+          </ul>
+        </section>
+
+        {
+          relatedTools.length > 0 && (
+            <section class="w-full min-w-0 max-w-full overflow-hidden rounded-card bg-surface p-5 shadow-brutal [border:var(--border-strong)]">
+              <h2 class="m-0 mb-3 text-[1.1rem] font-black">Tools terkait</h2>
+              <div class="grid gap-2">
+                {relatedTools.map((item) => (
+                  <a class="font-black underline decoration-2 underline-offset-4 hover:text-accent-secondary" href={`/tools/${item.slug}`}>
+                    {item.title}
+                  </a>
+                ))}
+              </div>
+            </section>
+          )
+        }
+      </aside>
+    </div>
+  </Section>
+
+  <script>
+    const form = document.querySelector<HTMLFormElement>("[data-tool-form]");
+    const resultPanel = document.querySelector<HTMLElement>("[data-tool-result]");
+    const output = document.querySelector<HTMLElement>("[data-tool-output]");
+    const statusText = document.querySelector<HTMLElement>("[data-tool-status]");
+    const submitButton = document.querySelector<HTMLButtonElement>("[data-tool-submit]");
+
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!form || !resultPanel || !output || !statusText || !submitButton) return;
+
+      const slug = form.getAttribute("data-tool-slug");
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+
+      for (const [key, value] of formData.entries()) {
+        const text = String(value).trim();
+        if (text) params.set(key, text);
+      }
+
+      statusText.textContent = "Lagi dicek...";
+      submitButton.disabled = true;
+
+      try {
+        const response = await fetch(`/api/tools/${slug}?${params.toString()}`, {
+          headers: { accept: "application/json" }
+        });
+        const payload = await response.json();
+
+        if (!payload.ok) {
+          throw new Error(payload.error || "Tool gagal dijalankan.");
+        }
+
+        output.textContent = JSON.stringify(payload.data, null, 2);
+        resultPanel.classList.remove("hidden");
+        statusText.textContent = `Selesai dalam ${payload.data.durationMs} ms.`;
+      } catch (error) {
+        output.textContent = JSON.stringify(
+          {
+            error: error instanceof Error ? error.message : "Tool gagal dijalankan."
+          },
+          null,
+          2
+        );
+        resultPanel.classList.remove("hidden");
+        statusText.textContent = "Gagal. Cek output untuk detailnya.";
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  </script>
+</BaseLayout>
