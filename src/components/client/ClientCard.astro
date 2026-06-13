@@ -1,0 +1,30 @@
+---
+import Card from "@components/shared/Card.astro";
+import FallbackImage from "@components/shared/FallbackImage.astro";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  client: CollectionEntry<"clients">;
+  projectCount?: number;
+}
+
+const { client, projectCount = 0 } = Astro.props;
+const displayName = client.data.isPublic ? client.data.name : "Klien confidential";
+---
+
+<Card href={`/clients/${client.data.slug}`}>
+  <FallbackImage
+    src={client.data.isPublic ? client.data.coverImage || client.data.logo : ""}
+    alt={client.data.isPublic ? `Logo atau cover ${client.data.name}` : "Cover klien confidential"}
+    label={displayName}
+    aspect="wide"
+  />
+  <div class="grid gap-2.5 p-[18px]">
+    <span class="text-[0.84rem] font-[850] text-text-secondary">{client.data.industry}</span>
+    <h3 class="m-0">{displayName}</h3>
+    <p class="m-0 leading-[1.6] text-text-secondary">{client.data.relationship}</p>
+    <strong class="w-fit rounded-full border-[1.5px] border-text-primary bg-accent-soft px-2 py-1 text-[0.8rem]">
+      {projectCount} project
+    </strong>
+  </div>
+</Card>

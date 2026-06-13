@@ -1,0 +1,23 @@
+---
+import Badge from "@components/shared/Badge.astro";
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  description: string;
+  tone?: "accent" | "neutral" | "highlight";
+}
+
+const { eyebrow, title, description, tone = "accent" } = Astro.props;
+---
+
+<header class="mx-auto grid w-[calc(100%_-_32px)] max-w-[1120px] gap-[18px] py-16 pb-10 max-[720px]:w-[calc(100%_-_24px)]">
+  <Badge tone={tone} class="px-3 py-1.5 text-xl">{eyebrow}</Badge>
+  <h1 class="m-0 max-w-[980px] text-[3rem] font-black leading-none md:text-[4.4rem]">
+    {title}
+  </h1>
+  <p class="m-0 max-w-[760px] text-[1.05rem] leading-[1.7] text-text-secondary">
+    {description}
+  </p>
+  <slot />
+</header>

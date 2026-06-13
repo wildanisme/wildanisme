@@ -1,0 +1,75 @@
+---
+import Header from "@components/shared/Header.astro";
+import Footer from "@components/shared/Footer.astro";
+import { site } from "@data/site";
+import { personJsonLd, websiteJsonLd } from "@lib/structured-data";
+import "@styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  image?: string;
+  structuredData?: unknown | unknown[];
+}
+
+const {
+  title = site.title,
+  description = site.description,
+  canonical = Astro.url.pathname,
+  image = "/images/og-default.svg",
+  structuredData = []
+} = Astro.props;
+
+const pageTitle = title === site.title ? title : `${title} - ${site.brand}`;
+const canonicalUrl = new URL(canonical, site.url).toString();
+const imageUrl = new URL(image, site.url).toString();
+const jsonLdItems = [
+  personJsonLd(),
+  websiteJsonLd(),
+  ...(Array.isArray(structuredData) ? structuredData : [structuredData])
+].filter(Boolean);
+---
+
+<!doctype html>
+<html lang={site.language}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={site.locale} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      (() => {
+        const allowedBackgrounds = new Set(["flat", "dots", "noise", "diagonal", "blocks", "best"]);
+        const background = new URLSearchParams(window.location.search).get("bg") || "noise";
+        document.documentElement.dataset.background = allowedBackgrounds.has(background) ? background : "noise";
+      })();
+    </script>
+    {
+      jsonLdItems.map((item) => (
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(item)} />
+      ))
+    }
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Lewati ke konten</a>
+    <Header />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

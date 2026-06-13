@@ -1,0 +1,48 @@
+---
+import Button from "@components/shared/Button.astro";
+import Badge from "@components/shared/Badge.astro";
+import { proofPoints, site } from "@data/site";
+---
+
+<section class="py-[72px] pb-14">
+  <div class="mx-auto grid w-[calc(100%_-_32px)] max-w-[1120px] items-center gap-9 max-[720px]:w-[calc(100%_-_24px)] min-[921px]:grid-cols-[minmax(0,1fr)_minmax(320px,0.72fr)]">
+    <div class="grid gap-[22px]">
+        <Badge class="text-xl" tone="accent">Web Dev / Sysadmin / SEO</Badge>
+      <h1 class="m-0 max-w-[840px] text-[3rem] font-black leading-[0.96] min-[521px]:text-[3.6rem] min-[921px]:text-[4.8rem]">
+        Stop ngelus dada lihat web error. Waktunya panggil bala bantuan.
+      </h1>
+      <p class="m-0 max-w-[700px] text-[1.18rem] leading-[1.7] text-text-secondary">
+        Saya <strong>Wildan</strong>, orang di balik <strong>wildanisme.com</strong>. Saya bantu beresin web yang error,
+        server yang rewel, deploy yang bikin waswas, sampai SEO teknis yang kelihatan sepi.
+        Santai aja, yang penting akar masalahnya ketemu dan fix-nya jelas.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <Button href="/contact">Lapor, web saya aneh!</Button>
+        <Button href="/projects" variant="secondary">Lihat kerjaan saya</Button>
+      </div>
+    </div>
+    <div class="w-full self-center overflow-hidden rounded-card bg-surface shadow-brutal [border:var(--border-strong)]" aria-label="Ringkasan profil">
+      <div class="flex gap-2 border-b-[3px] border-text-primary bg-accent p-3">
+        <span class="h-2.5 w-2.5 rounded-full border-2 border-text-primary bg-surface"></span>
+        <span class="h-2.5 w-2.5 rounded-full border-2 border-text-primary bg-surface"></span>
+        <span class="h-2.5 w-2.5 rounded-full border-2 border-text-primary bg-surface"></span>
+      </div>
+      <div class="grid gap-3 p-5">
+        <p class="m-0 font-mono text-[0.82rem] font-bold text-text-secondary">$ whoami</p>
+        <strong class="text-[1rem] leading-snug">{site.owner}</strong>
+        <p class="m-0 font-mono text-[0.82rem] font-bold text-text-secondary">$ role</p>
+        <strong class="text-[1rem] leading-snug">Web Maintenance, Sysadmin/DevOps, SEO Teknis</strong>
+        <p class="m-0 font-mono text-[0.82rem] font-bold text-text-secondary">$ I fix</p>
+        <strong class="text-[1rem] leading-snug">Bug bandel, deploy bikin keringat dingin, SEO yang sunyi senyap</strong>
+        <div class="mt-2 grid gap-2.5">
+          {proofPoints.map((item) => (
+            <div class="rounded-card border-2 border-text-primary bg-surface-muted p-3">
+              <span class="mb-1 block text-[0.78rem] font-extrabold text-text-secondary">{item.label}</span>
+              <strong class="block text-[0.95rem] leading-snug">{item.value}</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,55 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/shared/Section.astro";
+import Button from "@components/shared/Button.astro";
+import PageHeader from "@components/shared/PageHeader.astro";
+import { site } from "@data/site";
+---
+
+<BaseLayout
+  title="Tentang Wildan"
+  description="Tentang Wildan Taufiq Abdul Aziz, independent web developer, sysadmin/DevOps, dan SEO teknis di balik wildanisme."
+>
+  <PageHeader
+    eyebrow="Tentang"
+    title="Kenalan sama orang yang bakal jawab email/pesan Anda jam 11 malam."
+    description="wildanisme adalah ruang kerja personal saya untuk web maintenance, bug fix, optimasi, deploy aplikasi, hardening server, SEO teknis, dan curhatan teknis."
+  />
+
+  <Section>
+    <div class="grid gap-[22px] lg:grid-cols-3">
+      <article class="brutal-panel p-[22px]">
+        <h2 class="mb-2 font-bold text-xl underline">Ini siapa, sih?</h2>
+        <!-- <p class="text-text-secondary">
+            Saya {site.owner}. Anggap saja saya "penerjemah" antara ide bisnis
+            Anda dan bahasa mesin yang kadang suka ngambek. Saya bantu bisnis
+            dan tim kecil biar nggak pusing lagi sama bug, web lemot, atau proses deploy yang bikin jantungan
+        </p> -->
+        <p class="text-text-secondary">
+            Kenalin, saya <strong>{site.owner}</strong>. Sehari-hari, kerjaan saya adalah ngadepin kode
+            yang lagi 'bad mood' dan server yang butuh perhatian. Fokusnya satu:
+            bikin website Anda jalan waras lagi, biar Anda bisa fokus ke hal lain.
+        </p>
+      </article>
+      <article class="brutal-panel p-[22px]">
+        <h2 class="mb-2 font-bold text-xl underline">Gimana cara kerjanya?</h2>
+        <p class="text-text-secondary">
+            Saya kerja kayak dokter. Dengerin dulu "keluhannya", periksa "gejalanya",
+            baru cari "penyakit"-nya. Solusinya nggak pake resep tulisan ceker ayam; s
+            emua dijelasin terang-terangan, termasuk "efek sampingnya" kalau ada.
+        </p>
+      </article>
+      <article class="brutal-panel p-[22px]">
+        <h2 class="mb-2 font-bold text-xl underline">Bisa ngerjain apa aja?</h2>
+        <p class="text-text-secondary">
+            Tumpukan keahlian saya ada di tiga area: <strong>Ngebangun & Ngerawat Web</strong> (PHP, JavaScript, QA Manual atau Automation),
+            <strong>Ngejaga Rumahnya</strong> (Sysadmin, DevOps, Hardening Server),
+            dan <strong>Bikin Gampang Ditemuin</strong> (SEO Teknis). Sisanya? Anggap saja bumbu penyedap.
+        </p>
+      </article>
+    </div>
+    <div class="mt-7">
+      <Button href="/contact">Diskusikan gejalanya</Button>
+    </div>
+  </Section>
+</BaseLayout>

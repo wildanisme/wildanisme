@@ -1,0 +1,50 @@
+---
+import { navigation, partnersProducts } from "@data/navigation";
+import { site } from "@data/site";
+---
+
+<footer class="mt-24 border-t-[5px] border-text-primary bg-inherit">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div class="flex flex-col gap-3">
+            <a class="font-black text-gray-800 hover:text-accent-secondary transition-colors uppercase underline select-none mb-3" href="/">{site.brand}</a>
+            <p class="font-medium text-gray-950">
+                Saya bantu maintenance, bug fix, optimasi, deploy aplikasi, hardening server,
+                dan SEO teknis. Santai aja, yang penting masalahnya ketahuan dan fix-nya jelas.
+            </p>
+        </div>
+        <div>
+            <h3 class="text-lg font-black uppercase text-gray-950 tracking-wider mb-4">Menu Lainnya</h3>
+            <ul>
+                <li class="space-y-2">
+                    {
+                    navigation.map((item) => (
+                        <a class="block font-black text-gray-950 hover:text-accent-secondary underline transition-colors" href={item.href}>{item.label}</a>
+                    ))
+                    }
+                </li>
+            </ul>
+        </div>
+        <div>
+            <h3 class="text-lg font-black uppercase text-gray-950 tracking-wider mb-4">Partners & Product</h3>
+            <ul>
+                <li class="space-y-2">
+                    {
+                    partnersProducts.map((item) => (
+                        <a class="block font-black text-gray-950 hover:text-accent-secondary underline transition-colors" href={item.href}>{item.label}</a>
+                    ))
+                    }
+                </li>
+            </ul>
+        </div>
+        <div>
+            <h3 class="text-lg font-black uppercase text-gray-950 tracking-wider mb-4">Kontak</h3>
+            <a class="block font-black text-gray-800 hover:text-accent-secondary transition-colors" href={`mailto:${site.email}`}>{site.email}</a>
+            <p class="text-gray-950">{site.responseTime}</p>
+        </div>
+    </div>
+  </div>
+  <div class="mx-auto flex justify-center gap-4 border-t-[3px] border-text-primary py-[18px] text-center text-[0.9rem] text-black max-[720px]:w-[calc(100%_-_24px)]">
+      <span class="font-bold align-middle text-black">© {new Date().getFullYear()} {site.brand} All Right Reserved</span>
+  </div>
+</footer>

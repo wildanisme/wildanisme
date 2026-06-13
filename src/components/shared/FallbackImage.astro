@@ -1,0 +1,39 @@
+---
+import { Image } from "astro:assets";
+
+interface Props {
+  src?: ImageMetadata | string;
+  alt: string;
+  label?: string;
+  aspect?: "wide" | "project" | "square";
+}
+
+const { src, alt, label = "wildanisme", aspect = "wide" } = Astro.props;
+
+const aspectClasses = {
+  wide: "aspect-video",
+  project: "aspect-[16/10]",
+  square: "aspect-square"
+};
+const imageClasses = ["w-full border-b-[3px] border-text-primary object-cover", aspectClasses[aspect]];
+---
+
+{
+  src && typeof src === "string" ? (
+    <Image class:list={imageClasses} src={src as string} alt={alt} loading="lazy" inferSize />
+  ) : src ? (
+    <Image class:list={imageClasses} src={src as ImageMetadata} alt={alt} loading="lazy" />
+  ) : (
+    <div
+      class:list={[
+        "grid w-full place-items-center overflow-hidden border-b-[3px] border-text-primary",
+        "[background:linear-gradient(135deg,transparent_0_47%,var(--color-text-primary)_47%_53%,transparent_53%),var(--color-accent-soft)]",
+        aspectClasses[aspect]
+      ]}
+      role="img"
+      aria-label={alt}
+    >
+      <span class="rounded-full bg-accent px-3 py-2 font-black shadow-brutal-sm [border:var(--border-strong)]">{label}</span>
+    </div>
+  )
+}

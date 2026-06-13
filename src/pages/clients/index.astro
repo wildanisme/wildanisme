@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/shared/Section.astro";
+import PageHeader from "@components/shared/PageHeader.astro";
+import ClientCard from "@components/client/ClientCard.astro";
+import { getPublishedClients, getPublishedProjects } from "@lib/content";
+
+const projects = getPublishedProjects(await getCollection("projects"));
+const publishedClients = getPublishedClients(await getCollection("clients"));
+---
+
+<BaseLayout
+  title="Klien"
+  description="Daftar klien dan konteks project yang pernah dikerjakan oleh wildanisme."
+>
+  <PageHeader
+    eyebrow="Klien"
+    title="Di balik layar: beberapa klien yang mempercayakan dapurnya."
+    description="Beberapa klien ngasih izin buat mejeng di sini. Sisanya? Identitasnya saya simpan di brankas, tapi ilmunya tetap saya bagi."
+  />
+  <Section>
+    <div class="grid gap-[22px] sm:grid-cols-2 lg:grid-cols-3">
+      {publishedClients.map((client) => (
+        <ClientCard
+          client={client}
+          projectCount={projects.filter((project) => project.data.clientSlug === client.data.slug).length}
+        />
+      ))}
+    </div>
+  </Section>
+</BaseLayout>

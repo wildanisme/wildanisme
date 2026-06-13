@@ -1,0 +1,35 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Button from "@components/shared/Button.astro";
+import FallbackImage from "@components/shared/FallbackImage.astro";
+import { getClientLabel } from "@lib/content";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  clients: CollectionEntry<"clients">[];
+}
+
+const { project, clients } = Astro.props;
+---
+
+<header class="mx-auto grid w-[calc(100%_-_32px)] max-w-[1120px] items-center gap-8 py-14 pb-8 max-[720px]:w-[calc(100%_-_24px)] min-[881px]:grid-cols-[minmax(0,0.9fr)_minmax(320px,1fr)]">
+  <div>
+    <p class="w-fit rounded-full bg-accent-soft px-2.5 py-1.5 text-[0.82rem] font-black shadow-brutal-sm [border:var(--border-strong)]">
+      {getClientLabel(clients, project.data.clientSlug)} / {project.data.year}
+    </p>
+    <h1 class="my-4 text-5xl font-black leading-[0.98] min-[881px]:text-[4.4rem]">{project.data.title}</h1>
+    <p class="max-w-[680px] text-[1.12rem] leading-[1.7] text-text-secondary">{project.data.summary}</p>
+    <div class="mt-6 flex flex-wrap gap-3">
+      {project.data.demoUrl && <Button href={project.data.demoUrl}>Lihat demo</Button>}
+      <Button href="/projects" variant="secondary">Semua project</Button>
+    </div>
+  </div>
+  <div class="overflow-hidden rounded-card bg-surface shadow-brutal [border:var(--border-strong)]">
+    <FallbackImage
+      src={project.data.coverImage}
+      alt={`Cover project ${project.data.title}`}
+      label={project.data.title}
+      aspect="wide"
+    />
+  </div>
+</header>

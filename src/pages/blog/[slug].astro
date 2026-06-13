@@ -1,0 +1,75 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Badge from "@components/shared/Badge.astro";
+import FallbackImage from "@components/shared/FallbackImage.astro";
+import ContentLayout from "@components/blog/ContentLayout.astro";
+import { formatDate } from "@lib/content";
+import { site } from "@data/site";
+import { breadcrumbJsonLd } from "@lib/structured-data";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => data.isPublished);
+  return posts.map((post) => ({
+    params: { slug: post.data.slug },
+    props: { post }
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const postUrl = new URL(`/blog/${post.data.slug}`, site.url).toString();
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.data.title,
+    description: post.data.description,
+    url: postUrl,
+    datePublished: post.data.publishedAt.toISOString(),
+    dateModified: (post.data.updatedAt ?? post.data.publishedAt).toISOString(),
+    author: {
+      "@type": "Person",
+      name: post.data.author
+    }
+  },
+  breadcrumbJsonLd([
+    { name: "Beranda", url: site.url },
+    { name: "Blog", url: new URL("/blog", site.url).toString() },
+    { name: post.data.title, url: postUrl }
+  ])
+];
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  canonical={`/blog/${post.data.slug}`}
+  image={post.data.coverImage}
+  structuredData={structuredData}
+>
+  <article>
+    <header class="container grid gap-[18px] py-16 pb-7">
+      <Badge tone="accent">{post.data.category}</Badge>
+      <h1 class="m-0 max-w-[980px] text-[3rem] font-black leading-none md:text-[4.4rem]">{post.data.title}</h1>
+      <p class="m-0 max-w-[760px] leading-[1.7] text-text-secondary">{post.data.description}</p>
+      <div class="flex flex-wrap gap-3 font-extrabold text-text-secondary">
+        <span>{post.data.author}</span>
+        <span>{formatDate(post.data.publishedAt)}</span>
+      </div>
+    </header>
+    <div class="container brutal-panel mb-10 overflow-hidden">
+      <FallbackImage
+        src={post.data.coverImage}
+        alt={`Cover tulisan ${post.data.title}`}
+        label={post.data.category}
+        aspect="wide"
+      />
+    </div>
+    <section class="container flex min-w-0 justify-center">
+      <ContentLayout>
+        <Content />
+      </ContentLayout>
+    </section>
+  </article>
+</BaseLayout>

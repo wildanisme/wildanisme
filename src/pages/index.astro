@@ -1,0 +1,35 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import HeroSection from "@components/home/HeroSection.astro";
+import ServicesSection from "@components/home/ServicesSection.astro";
+import FeaturedProjects from "@components/home/FeaturedProjects.astro";
+import ClientSection from "@components/home/ClientSection.astro";
+import LatestPosts from "@components/home/LatestPosts.astro";
+import Section from "@components/shared/Section.astro";
+import Button from "@components/shared/Button.astro";
+import { getFeaturedProjects, getPublishedClients, getPublishedPosts, getPublishedServices } from "@lib/content";
+
+const projects = getFeaturedProjects(await getCollection("projects"));
+const services = getPublishedServices(await getCollection("services"));
+const clients = getPublishedClients(await getCollection("clients"));
+const posts = getPublishedPosts(await getCollection("blog"));
+---
+
+<BaseLayout>
+  <div class="page-stack">
+    <HeroSection />
+    <ServicesSection services={services} />
+    <FeaturedProjects projects={projects} clients={clients} />
+    <ClientSection projects={projects} clients={clients} />
+    <LatestPosts posts={posts} />
+    <Section
+      class="px-3 py-1.5 text-xl"
+      eyebrow="Mulai"
+      title="Website Anda kayak Candi Roro Jonggrang, dibangun semalam, dirawat seabad?"
+      description="Kirim URL, gejala, dan targetnya. Saya bantu bedah mana yang wajib diberesin dulu, mana yang masih bisa antre, dan apa langkah paling masuk akal."
+    >
+      <Button href="/contact">Diskusikan gejalanya</Button>
+    </Section>
+  </div>
+</BaseLayout>

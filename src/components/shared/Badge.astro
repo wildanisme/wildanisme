@@ -1,0 +1,25 @@
+---
+interface Props {
+  tone?: "accent" | "neutral" | "highlight";
+  class?: string;
+}
+
+const { tone = "neutral", class: className } = Astro.props;
+
+const toneClasses = {
+  neutral: "bg-surface-muted",
+  accent: "bg-accent-soft",
+  highlight: "bg-[#ffe7d2]"
+};
+---
+
+<span
+  class:list={[
+    "inline-flex w-fit items-center rounded-full px-2 py-1 text-[0.78rem] font-[850]",
+    "border-[1.5px] border-text-primary",
+    toneClasses[tone],
+    className
+  ]}
+>
+  <slot />
+</span>

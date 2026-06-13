@@ -1,0 +1,22 @@
+# wildanisme
+
+wildanisme adalah website personal dan portfolio Wildan Taufiq Abdul Aziz, independent DevOps dan web developer.
+
+Fokus layanan:
+- DevOps dan deployment automation
+- Web development
+- Website dan landing page
+- Web application development
+- Technical SEO dan performance
+- Automation dan internal tools
+
+Halaman penting:
+- /services: daftar layanan
+- /projects: semua project publik
+- /projects/personal: project personal
+- /clients: daftar klien
+- /blog: tulisan teknis
+- /about: profil Wildan
+- /contact: kontak langsung
+
+Bahasa utama website v1 adalah Bahasa Indonesia. Struktur konten disiapkan agar bisa mendukung konten berbahasa Inggris di masa depan.

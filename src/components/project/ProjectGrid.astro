@@ -1,0 +1,31 @@
+---
+import type { CollectionEntry } from "astro:content";
+import ProjectCard from "@components/project/ProjectCard.astro";
+
+interface Props {
+  projects: CollectionEntry<"projects">[];
+  clients: CollectionEntry<"clients">[];
+  emptyTitle?: string;
+  emptyDescription?: string;
+}
+
+const {
+  projects,
+  clients,
+  emptyTitle = "Belum ada project",
+  emptyDescription = "Project akan tampil di sini setelah kontennya dipublikasikan."
+} = Astro.props;
+---
+
+{
+  projects.length > 0 ? (
+    <div class="grid grid-cols-3 gap-[22px] max-lg:grid-cols-2 max-sm:grid-cols-1">
+      {projects.map((project) => <ProjectCard project={project} clients={clients} />)}
+    </div>
+  ) : (
+    <div class="rounded-card bg-surface p-7 shadow-brutal [border:var(--border-strong)]">
+      <h3 class="m-0">{emptyTitle}</h3>
+      <p class="m-0 mt-2 text-text-secondary">{emptyDescription}</p>
+    </div>
+  )
+}

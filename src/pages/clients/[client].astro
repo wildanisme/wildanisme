@@ -1,0 +1,68 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/shared/Section.astro";
+import PageHeader from "@components/shared/PageHeader.astro";
+import ClientProjectList from "@components/client/ClientProjectList.astro";
+import ContentLayout from "@components/blog/ContentLayout.astro";
+import { site } from "@data/site";
+import { getPublishedClients, getPublishedProjects } from "@lib/content";
+import { breadcrumbJsonLd } from "@lib/structured-data";
+
+export async function getStaticPaths() {
+  const clients = getPublishedClients(await getCollection("clients"));
+  return clients.map((client) => ({
+      params: { client: client.data.slug },
+      props: { client }
+    }));
+}
+
+const { client } = Astro.props;
+const { Content } = await render(client);
+const clients = getPublishedClients(await getCollection("clients"));
+const projects = getPublishedProjects(await getCollection("projects")).filter(
+  (project) => project.data.clientSlug === client.data.slug
+);
+const displayName = client.data.isPublic ? client.data.name : "Klien confidential";
+const clientUrl = new URL(`/clients/${client.data.slug}`, site.url).toString();
+const structuredData = breadcrumbJsonLd([
+  { name: "Beranda", url: site.url },
+  { name: "Klien", url: new URL("/clients", site.url).toString() },
+  { name: displayName, url: clientUrl }
+]);
+---
+
+<BaseLayout
+  title={displayName}
+  description={`Project wildanisme untuk ${displayName}.`}
+  canonical={`/clients/${client.data.slug}`}
+  structuredData={structuredData}
+>
+  <PageHeader
+    eyebrow={client.data.industry}
+    tone={client.data.isPublic ? "accent" : "highlight"}
+    title={displayName}
+    description={client.data.relationship}
+  >
+    {
+      client.data.isPublic && client.data.website && (
+        <a class="w-fit font-black underline decoration-2 underline-offset-[5px]" href={client.data.website}>Website klien</a>
+      )
+    }
+  </PageHeader>
+  <Section title="Konteks client">
+    <ContentLayout>
+      <Content />
+    </ContentLayout>
+  </Section>
+  <Section title="Project yang dikerjakan" class="mt-6">
+    <ClientProjectList projects={projects} clients={clients} />
+  </Section>
+  {
+    client.data.testimonial && (
+      <Section eyebrow="Testimonial" title="Kata klien" class="mt-6">
+        <blockquote class="brutal-panel m-0 max-w-[780px] p-6 text-[1.3rem] font-extrabold leading-[1.55]">{client.data.testimonial}</blockquote>
+      </Section>
+    )
+  }
+</BaseLayout>
