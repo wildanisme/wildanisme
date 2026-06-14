@@ -3,6 +3,9 @@ import net from "node:net";
 import tls from "node:tls";
 
 type DnsRecordType = "A" | "AAAA" | "NS" | "MX" | "TXT" | "CAA" | "SOA";
+type ExternalLookupResult<T> =
+  | { ok: true; data: T; source: string }
+  | { ok: false; error: string; sources: string[] };
 
 const DOMAIN_PATTERN = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
 const HOST_PATTERN = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9-]{2,63}$/i;
@@ -12,11 +15,28 @@ const RESOLVERS = {
   quad9: "9.9.9.9",
   opendns: "208.67.222.222"
 };
+const RDAP_IP_SERVERS = [
+  "https://rdap.arin.net/registry/ip/",
+  "https://rdap.apnic.net/ip/",
+  "https://rdap.db.ripe.net/ip/",
+  "https://rdap.lacnic.net/rdap/ip/",
+  "https://rdap.afrinic.net/rdap/ip/"
+];
+const IANA_RDAP_DNS_BOOTSTRAP_URL = "https://data.iana.org/rdap/dns.json";
 
 function fail(message: string, status = 400): never {
   const error = new Error(message) as Error & { status?: number };
   error.status = status;
   throw error;
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Request gagal.";
+}
+
+function isSecurityBlock(error: unknown) {
+  const message = getErrorMessage(error);
+  return message.includes("private/internal") || message.includes("localhost") || message.includes("diblokir");
 }
 
 function normalizeDomain(input: string) {
@@ -148,14 +168,92 @@ function getEntityName(entity: any) {
   return fn?.[3] ?? entity?.handle ?? null;
 }
 
-async function fetchJson(url: string) {
+async function fetchJson(url: string, timeoutMs = 8000) {
   const response = await fetch(url, {
     headers: { accept: "application/rdap+json, application/json" },
-    signal: AbortSignal.timeout(8000)
+    signal: AbortSignal.timeout(timeoutMs)
   });
 
   if (!response.ok) fail(`Request gagal dengan status ${response.status}.`, response.status);
   return response.json();
+}
+
+async function tryFetchJson(url: string, timeoutMs = 6000): Promise<ExternalLookupResult<any>> {
+  try {
+    return { ok: true, data: await fetchJson(url, timeoutMs), source: url };
+  } catch (error) {
+    return { ok: false, error: getErrorMessage(error), sources: [url] };
+  }
+}
+
+async function getRdapDomainSources(domain: string) {
+  const sources = [`https://rdap.org/domain/${domain}`];
+  const tld = domain.split(".").at(-1);
+  if (!tld) return sources;
+
+  try {
+    const bootstrap = await fetchJson(IANA_RDAP_DNS_BOOTSTRAP_URL, 5000);
+    const services = Array.isArray(bootstrap.services) ? bootstrap.services : [];
+    const service = services.find((item: unknown) => {
+      const [tlds] = Array.isArray(item) ? item : [];
+      return Array.isArray(tlds) && tlds.some((value) => String(value).toLowerCase() === tld);
+    });
+    const [, urls] = Array.isArray(service) ? service : [];
+    if (Array.isArray(urls)) {
+      sources.push(
+        ...urls
+          .filter((url) => typeof url === "string" && url.startsWith("https://"))
+          .map((url) => `${url.endsWith("/") ? url : `${url}/`}domain/${domain}`)
+      );
+    }
+  } catch {
+    // rdap.org remains the primary fallback when IANA bootstrap is unavailable.
+  }
+
+  return [...new Set(sources)];
+}
+
+async function fetchRdapDomain(domain: string): Promise<ExternalLookupResult<any>> {
+  const sources = await getRdapDomainSources(domain);
+  const errors: string[] = [];
+
+  for (const source of sources) {
+    const result = await tryFetchJson(source);
+    if (result.ok) return result;
+    errors.push(`${source}: ${result.error}`);
+  }
+
+  return {
+    ok: false,
+    error: errors.at(-1) ?? "RDAP domain lookup gagal.",
+    sources
+  };
+}
+
+async function fetchRdapIp(ip: string): Promise<ExternalLookupResult<any>> {
+  const sources = RDAP_IP_SERVERS.map((server) => `${server}${ip}`);
+  const lookups = sources.map((source) => tryFetchJson(source));
+  const results = await Promise.all(lookups);
+  const success = results.find((result): result is { ok: true; data: any; source: string } => result.ok);
+
+  if (success) return success;
+
+  return {
+    ok: false,
+    error: results.find((result) => !result.ok)?.error ?? "RDAP IP lookup gagal.",
+    sources
+  };
+}
+
+function externalFallback(kind: string, target: string, lookup: { error: string; sources: string[] }) {
+  return {
+    available: false,
+    fallback: true,
+    target,
+    message: `${kind} sedang tidak bisa mengambil data dari sumber eksternal. Coba ulang beberapa saat lagi.`,
+    error: lookup.error,
+    triedSources: lookup.sources
+  };
 }
 
 function normalizeUrl(input: string) {
@@ -260,12 +358,25 @@ async function checkDnsPropagation(target: string, recordInput?: string | null) 
 
 async function checkDomainAge(target: string) {
   const domain = normalizeDomain(target);
-  const rdap = await fetchJson(`https://rdap.org/domain/${domain}`);
+  const lookup = await fetchRdapDomain(domain);
+  if (!lookup.ok) {
+    return {
+      domain,
+      age: null,
+      registrar: null,
+      status: [],
+      events: [],
+      external: externalFallback("RDAP domain", domain, lookup)
+    };
+  }
+
+  const rdap = lookup.data;
   const registration = rdap.events?.find((event: any) => event.eventAction === "registration");
   const registrar = rdap.entities?.find((entity: any) => entity.roles?.includes("registrar"));
 
   return {
     domain,
+    source: lookup.source,
     age: getAge(registration?.eventDate),
     registrar: getEntityName(registrar),
     status: rdap.status ?? [],
@@ -280,10 +391,29 @@ async function checkRdapWhois(target: string) {
     const ip = normalizeIp(rawTarget);
     if (isPrivateIp(ip)) fail("IP private/internal tidak diizinkan.");
 
-    const rdap = await fetchJson(`https://rdap.org/ip/${ip}`);
+    const lookup = await fetchRdapIp(ip);
+    if (!lookup.ok) {
+      return {
+        type: "ip",
+        ip,
+        handle: null,
+        name: null,
+        networkType: null,
+        country: null,
+        startAddress: null,
+        endAddress: null,
+        parentHandle: null,
+        entities: [],
+        events: [],
+        external: externalFallback("RDAP IP", ip, lookup)
+      };
+    }
+
+    const rdap = lookup.data;
     return {
       type: "ip",
       ip,
+      source: lookup.source,
       handle: rdap.handle,
       name: rdap.name,
       networkType: rdap.type,
@@ -301,11 +431,26 @@ async function checkRdapWhois(target: string) {
   }
 
   const domain = normalizeDomain(rawTarget);
-  const rdap = await fetchJson(`https://rdap.org/domain/${domain}`);
+  const lookup = await fetchRdapDomain(domain);
+  if (!lookup.ok) {
+    return {
+      type: "domain",
+      domain,
+      handle: null,
+      registrar: null,
+      nameservers: [],
+      status: [],
+      events: [],
+      external: externalFallback("RDAP domain", domain, lookup)
+    };
+  }
+
+  const rdap = lookup.data;
 
   return {
     type: "domain",
     domain,
+    source: lookup.source,
     handle: rdap.handle,
     registrar: getEntityName(rdap.entities?.find((entity: any) => entity.roles?.includes("registrar"))),
     nameservers: rdap.nameservers?.map((nameserver: any) => nameserver.ldhName ?? nameserver.unicodeName) ?? [],
@@ -317,62 +462,100 @@ async function checkRdapWhois(target: string) {
 async function checkSslExpiry(target: string, portInput?: string | null) {
   const hostname = normalizeHost(target);
   const port = normalizePort(portInput);
-  await assertHostResolvesPublic(hostname);
+  try {
+    await assertHostResolvesPublic(hostname);
 
-  const certificate = await withTimeout(
-    new Promise<tls.PeerCertificate>((resolve, reject) => {
-      const socket = tls.connect(port, hostname, { servername: hostname }, () => {
-        const peerCertificate = socket.getPeerCertificate();
-        socket.end();
-        resolve(peerCertificate);
-      });
+    const certificate = await withTimeout(
+      new Promise<tls.PeerCertificate>((resolve, reject) => {
+        const socket = tls.connect(port, hostname, { servername: hostname }, () => {
+          const peerCertificate = socket.getPeerCertificate();
+          socket.end();
+          resolve(peerCertificate);
+        });
 
-      socket.on("error", reject);
-      socket.setTimeout(8000, () => {
-        socket.destroy();
-        reject(new Error("SSL check timeout."));
-      });
-    }),
-    9000
-  );
+        socket.on("error", reject);
+        socket.setTimeout(8000, () => {
+          socket.destroy();
+          reject(new Error("SSL check timeout."));
+        });
+      }),
+      9000
+    );
 
-  const validTo = new Date(certificate.valid_to);
-  return {
-    hostname,
-    port,
-    subject: certificate.subject,
-    issuer: certificate.issuer,
-    validFrom: certificate.valid_from,
-    validTo: certificate.valid_to,
-    daysRemaining: Math.floor((validTo.getTime() - Date.now()) / 86_400_000),
-    subjectAltName: certificate.subjectaltname
-  };
+    const validTo = new Date(certificate.valid_to);
+    return {
+      hostname,
+      port,
+      subject: certificate.subject,
+      issuer: certificate.issuer,
+      validFrom: certificate.valid_from,
+      validTo: certificate.valid_to,
+      daysRemaining: Math.floor((validTo.getTime() - Date.now()) / 86_400_000),
+      subjectAltName: certificate.subjectaltname
+    };
+  } catch (error) {
+    if (isSecurityBlock(error)) throw error;
+
+    return {
+      hostname,
+      port,
+      subject: null,
+      issuer: null,
+      validFrom: null,
+      validTo: null,
+      daysRemaining: null,
+      subjectAltName: null,
+      external: externalFallback("SSL certificate", `${hostname}:${port}`, {
+        error: getErrorMessage(error),
+        sources: [`${hostname}:${port}`]
+      })
+    };
+  }
 }
 
 async function checkHttpHeaders(target: string) {
   let currentUrl = normalizeUrl(target);
   const chain = [];
+  const sources = [];
 
   for (let index = 0; index < 6; index += 1) {
-    await assertHostResolvesPublic(currentUrl.hostname);
+    const source = currentUrl.toString();
+    sources.push(source);
 
-    const response = await fetch(currentUrl, {
-      redirect: "manual",
-      signal: AbortSignal.timeout(8000),
-      headers: { "user-agent": "wildanisme-tools/1.0" }
-    });
+    try {
+      await assertHostResolvesPublic(currentUrl.hostname);
 
-    const item = {
-      url: currentUrl.toString(),
-      status: response.status,
-      headers: pickHeaders(response.headers)
-    };
-    chain.push(item);
-    await response.body?.cancel();
+      const response = await fetch(currentUrl, {
+        redirect: "manual",
+        signal: AbortSignal.timeout(8000),
+        headers: { "user-agent": "wildanisme-tools/1.0" }
+      });
 
-    const location = response.headers.get("location");
-    if (!location || response.status < 300 || response.status > 399) break;
-    currentUrl = new URL(location, currentUrl);
+      const item = {
+        url: source,
+        status: response.status,
+        headers: pickHeaders(response.headers)
+      };
+      chain.push(item);
+      await response.body?.cancel();
+
+      const location = response.headers.get("location");
+      if (!location || response.status < 300 || response.status > 399) break;
+      currentUrl = new URL(location, currentUrl);
+    } catch (error) {
+      if (isSecurityBlock(error)) throw error;
+
+      return {
+        input: target,
+        finalUrl: chain.at(-1)?.url ?? null,
+        redirectCount: Math.max(0, chain.length - 1),
+        chain,
+        external: externalFallback("HTTP header", source, {
+          error: getErrorMessage(error),
+          sources
+        })
+      };
+    }
   }
 
   return {
@@ -413,9 +596,26 @@ async function checkIpAsn(target: string) {
   const ip = normalizeIp(target);
   if (isPrivateIp(ip)) fail("IP private/internal tidak diizinkan.");
 
-  const rdap = await fetchJson(`https://rdap.org/ip/${ip}`);
+  const lookup = await fetchRdapIp(ip);
+  if (!lookup.ok) {
+    return {
+      ip,
+      handle: null,
+      name: null,
+      type: null,
+      country: null,
+      startAddress: null,
+      endAddress: null,
+      parentHandle: null,
+      entities: [],
+      external: externalFallback("RDAP IP", ip, lookup)
+    };
+  }
+
+  const rdap = lookup.data;
   return {
     ip,
+    source: lookup.source,
     handle: rdap.handle,
     name: rdap.name,
     type: rdap.type,
