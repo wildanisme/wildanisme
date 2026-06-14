@@ -104,14 +104,6 @@
 <script>
   import QRCode from "qrcode";
 
-  const form = document.querySelector<HTMLFormElement>("[data-qr-form]");
-  const result = document.querySelector<HTMLElement>("[data-qr-result]");
-  const canvas = document.querySelector<HTMLCanvasElement>("[data-qr-canvas]");
-  const statusText = document.querySelector<HTMLElement>("[data-qr-status]");
-  const urlOutput = document.querySelector<HTMLElement>("[data-qr-url]");
-  const pngButton = document.querySelector<HTMLButtonElement>("[data-qr-download-png]");
-  const svgButton = document.querySelector<HTMLButtonElement>("[data-qr-download-svg]");
-
   let currentUrl = "";
   let currentSvg = "";
 
@@ -146,49 +138,65 @@
     URL.revokeObjectURL(href);
   };
 
-  form?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (!form || !result || !canvas || !statusText || !urlOutput) return;
+  function initializeQrTool() {
+    const form = document.querySelector<HTMLFormElement>("[data-qr-form]");
+    if (!form || form.dataset.qrFormReady === "true") return;
 
-    const formData = new FormData(form);
-    const size = getNumber(formData, "size", 420, 160, 1200);
-    const margin = getNumber(formData, "margin", 2, 0, 8);
-    const errorLevel = String(formData.get("errorLevel") || "M") as "L" | "M" | "Q" | "H";
+    const result = document.querySelector<HTMLElement>("[data-qr-result]");
+    const canvas = document.querySelector<HTMLCanvasElement>("[data-qr-canvas]");
+    const statusText = document.querySelector<HTMLElement>("[data-qr-status]");
+    const urlOutput = document.querySelector<HTMLElement>("[data-qr-url]");
+    const pngButton = document.querySelector<HTMLButtonElement>("[data-qr-download-png]");
+    const svgButton = document.querySelector<HTMLButtonElement>("[data-qr-download-svg]");
 
-    try {
-      currentUrl = normalizeQrUrl(String(formData.get("url") || ""));
-      const options = {
-        width: size,
-        margin,
-        errorCorrectionLevel: errorLevel,
-        color: {
-          dark: "#111816",
-          light: "#f7fbf8"
-        }
-      } as const;
+    form.dataset.qrFormReady = "true";
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!result || !canvas || !statusText || !urlOutput) return;
 
-      await QRCode.toCanvas(canvas, currentUrl, options);
-      currentSvg = await QRCode.toString(currentUrl, { ...options, type: "svg" });
+      const formData = new FormData(form);
+      const size = getNumber(formData, "size", 420, 160, 1200);
+      const margin = getNumber(formData, "margin", 2, 0, 8);
+      const errorLevel = String(formData.get("errorLevel") || "M") as "L" | "M" | "Q" | "H";
 
-      urlOutput.textContent = currentUrl;
-      result.classList.remove("hidden");
-      statusText.textContent = "QR siap. Tinggal download sesuai kebutuhan.";
-    } catch (error) {
-      statusText.textContent = error instanceof Error ? error.message : "QR gagal dibuat.";
-    }
-  });
+      try {
+        currentUrl = normalizeQrUrl(String(formData.get("url") || ""));
+        const options = {
+          width: size,
+          margin,
+          errorCorrectionLevel: errorLevel,
+          color: {
+            dark: "#111816",
+            light: "#f7fbf8"
+          }
+        } as const;
 
-  pngButton?.addEventListener("click", () => {
-    if (!canvas || !currentUrl) return;
+        await QRCode.toCanvas(canvas, currentUrl, options);
+        currentSvg = await QRCode.toString(currentUrl, { ...options, type: "svg" });
 
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-      downloadBlob(blob, getFileName(currentUrl, "png"));
-    }, "image/png");
-  });
+        urlOutput.textContent = currentUrl;
+        result.classList.remove("hidden");
+        statusText.textContent = "QR siap. Tinggal download sesuai kebutuhan.";
+      } catch (error) {
+        statusText.textContent = error instanceof Error ? error.message : "QR gagal dibuat.";
+      }
+    });
 
-  svgButton?.addEventListener("click", () => {
-    if (!currentSvg || !currentUrl) return;
-    downloadBlob(new Blob([currentSvg], { type: "image/svg+xml" }), getFileName(currentUrl, "svg"));
-  });
+    pngButton?.addEventListener("click", () => {
+      if (!canvas || !currentUrl) return;
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        downloadBlob(blob, getFileName(currentUrl, "png"));
+      }, "image/png");
+    });
+
+    svgButton?.addEventListener("click", () => {
+      if (!currentSvg || !currentUrl) return;
+      downloadBlob(new Blob([currentSvg], { type: "image/svg+xml" }), getFileName(currentUrl, "svg"));
+    });
+  }
+
+  initializeQrTool();
+  document.addEventListener("astro:page-load", initializeQrTool);
 </script>

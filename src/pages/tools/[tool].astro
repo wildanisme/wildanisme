@@ -287,54 +287,62 @@ const structuredData = breadcrumbJsonLd([
   </Section>
 
   <script>
-    const form = document.querySelector<HTMLFormElement>("[data-tool-form]");
-    const resultPanel = document.querySelector<HTMLElement>("[data-tool-result]");
-    const output = document.querySelector<HTMLElement>("[data-tool-output]");
-    const statusText = document.querySelector<HTMLElement>("[data-tool-status]");
-    const submitButton = document.querySelector<HTMLButtonElement>("[data-tool-submit]");
+    function initializeToolForm() {
+      const form = document.querySelector<HTMLFormElement>("[data-tool-form]");
+      if (!form || form.dataset.toolFormReady === "true") return;
 
-    form?.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (!form || !resultPanel || !output || !statusText || !submitButton) return;
+      const resultPanel = document.querySelector<HTMLElement>("[data-tool-result]");
+      const output = document.querySelector<HTMLElement>("[data-tool-output]");
+      const statusText = document.querySelector<HTMLElement>("[data-tool-status]");
+      const submitButton = document.querySelector<HTMLButtonElement>("[data-tool-submit]");
 
-      const slug = form.getAttribute("data-tool-slug");
-      const formData = new FormData(form);
-      const params = new URLSearchParams();
+      form.dataset.toolFormReady = "true";
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!resultPanel || !output || !statusText || !submitButton) return;
 
-      for (const [key, value] of formData.entries()) {
-        const text = String(value).trim();
-        if (text) params.set(key, text);
-      }
+        const slug = form.getAttribute("data-tool-slug");
+        const formData = new FormData(form);
+        const params = new URLSearchParams();
 
-      statusText.textContent = "Lagi dicek...";
-      submitButton.disabled = true;
-
-      try {
-        const response = await fetch(`/api/tools/${slug}?${params.toString()}`, {
-          headers: { accept: "application/json" }
-        });
-        const payload = await response.json();
-
-        if (!payload.ok) {
-          throw new Error(payload.error || "Tool gagal dijalankan.");
+        for (const [key, value] of formData.entries()) {
+          const text = String(value).trim();
+          if (text) params.set(key, text);
         }
 
-        output.textContent = JSON.stringify(payload.data, null, 2);
-        resultPanel.classList.remove("hidden");
-        statusText.textContent = `Selesai dalam ${payload.data.durationMs} ms.`;
-      } catch (error) {
-        output.textContent = JSON.stringify(
-          {
-            error: error instanceof Error ? error.message : "Tool gagal dijalankan."
-          },
-          null,
-          2
-        );
-        resultPanel.classList.remove("hidden");
-        statusText.textContent = "Gagal. Cek output untuk detailnya.";
-      } finally {
-        submitButton.disabled = false;
-      }
-    });
+        statusText.textContent = "Lagi dicek...";
+        submitButton.disabled = true;
+
+        try {
+          const response = await fetch(`/api/tools/${slug}?${params.toString()}`, {
+            headers: { accept: "application/json" }
+          });
+          const payload = await response.json();
+
+          if (!payload.ok) {
+            throw new Error(payload.error || "Tool gagal dijalankan.");
+          }
+
+          output.textContent = JSON.stringify(payload.data, null, 2);
+          resultPanel.classList.remove("hidden");
+          statusText.textContent = `Selesai dalam ${payload.data.durationMs} ms.`;
+        } catch (error) {
+          output.textContent = JSON.stringify(
+            {
+              error: error instanceof Error ? error.message : "Tool gagal dijalankan."
+            },
+            null,
+            2
+          );
+          resultPanel.classList.remove("hidden");
+          statusText.textContent = "Gagal. Cek output untuk detailnya.";
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+    }
+
+    initializeToolForm();
+    document.addEventListener("astro:page-load", initializeToolForm);
   </script>
 </BaseLayout>
