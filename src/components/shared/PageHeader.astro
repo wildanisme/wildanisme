@@ -11,12 +11,12 @@ interface Props {
 const { eyebrow, title, description, tone = "accent" } = Astro.props;
 ---
 
-<header class="mx-auto grid w-[calc(100%_-_32px)] max-w-[1120px] gap-[18px] py-16 pb-10 max-[720px]:w-[calc(100%_-_24px)]">
+<header class="mx-auto grid w-[calc(100%_-_32px)] max-w-[1120px] gap-[18px] py-16 pb-10 max-[720px]:w-[calc(100%_-_24px)] max-[520px]:py-12 max-[520px]:pb-8">
   <Badge tone={tone} class="px-3 py-1.5 text-xl">{eyebrow}</Badge>
-  <h1 class="m-0 max-w-[980px] text-[3rem] font-black leading-none md:text-[4.4rem]">
+  <h1 class="m-0 max-w-[980px] break-words text-[3rem] font-black leading-none max-[420px]:text-[2.45rem] md:text-[4.4rem]">
     {title}
   </h1>
-  <p class="m-0 max-w-[760px] text-[1.05rem] leading-[1.7] text-text-secondary">
+  <p class="m-0 max-w-[760px] break-words text-[1.05rem] leading-[1.7] text-text-secondary">
     {description}
   </p>
   <slot />
