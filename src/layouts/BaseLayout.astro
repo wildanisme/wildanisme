@@ -36,6 +36,7 @@ const imageType = imagePath.toLowerCase().endsWith(".png")
     ? "image/jpeg"
     : "image/png";
 const shouldRegisterServiceWorker = import.meta.env.PROD;
+const googleTagId = "G-NGN9NDL39B";
 const jsonLdItems = [
   personJsonLd(),
   websiteJsonLd(),
@@ -79,6 +80,27 @@ const jsonLdItems = [
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <ClientRouter fallback="swap" />
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${googleTagId}`}></script>
+    <script
+      is:inline
+      set:html={`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "${googleTagId}");
+
+window.__wildanismeGtagInitialPageTracked = false;
+document.addEventListener("astro:page-load", () => {
+  if (!window.__wildanismeGtagInitialPageTracked) {
+    window.__wildanismeGtagInitialPageTracked = true;
+    return;
+  }
+
+  gtag("config", "${googleTagId}", {
+    page_path: window.location.pathname + window.location.search,
+    page_title: document.title
+  });
+});`}
+    />
     <script is:inline>
       (() => {
         const allowedBackgrounds = new Set(["flat", "dots", "noise", "diagonal", "blocks", "best"]);

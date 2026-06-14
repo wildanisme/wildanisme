@@ -191,14 +191,42 @@ const structuredData = breadcrumbJsonLd([
                   </div>
                 </form>
 
-                <div class="mt-5 hidden rounded-card bg-code-surface p-4 text-white [border:var(--border-strong)]" data-tool-result>
-                  <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <h3 class="m-0 text-[1rem] font-black">Output</h3>
-                    <span class="rounded-full bg-accent px-2.5 py-1 text-[0.78rem] font-black text-text-primary [border:var(--border-strong)]">
-                      JSON
-                    </span>
+                <div class="mt-5 hidden rounded-card bg-surface p-4 shadow-brutal-sm [border:var(--border-strong)]" data-tool-result>
+                  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h3 class="m-0 text-[1.15rem] font-black">Output</h3>
+                      <p class="m-0 text-[0.9rem] font-bold text-text-secondary" data-tool-summary>
+                        Hasil cek akan muncul di sini.
+                      </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2" aria-label="Mode output">
+                      <button
+                        class="cursor-pointer rounded-full bg-accent px-3 py-1.5 text-[0.8rem] font-black text-text-primary transition hover:translate-x-px hover:translate-y-px [border:var(--border-strong)]"
+                        type="button"
+                        data-output-mode="readable"
+                        aria-pressed="true"
+                      >
+                        Ringkasan
+                      </button>
+                      <button
+                        class="cursor-pointer rounded-full bg-surface-muted px-3 py-1.5 text-[0.8rem] font-black text-text-secondary transition hover:bg-accent-soft hover:text-text-primary [border:1.5px_solid_var(--color-border)]"
+                        type="button"
+                        data-output-mode="json"
+                        aria-pressed="false"
+                      >
+                        Raw JSON
+                      </button>
+                      <button
+                        class="cursor-pointer rounded-full bg-surface-muted px-3 py-1.5 text-[0.8rem] font-black text-text-secondary transition hover:bg-accent-soft hover:text-text-primary [border:1.5px_solid_var(--color-border)]"
+                        type="button"
+                        data-tool-copy-json
+                      >
+                        Copy JSON
+                      </button>
+                    </div>
                   </div>
-                  <pre class="m-0 max-h-[520px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-card bg-[#151a18] p-4 text-[0.82rem] leading-[1.65]"><code data-tool-output></code></pre>
+                  <div class="grid gap-4" data-tool-readable></div>
+                  <pre class="m-0 hidden max-h-[520px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-card bg-[#151a18] p-4 text-[0.82rem] leading-[1.65] text-white"><code data-tool-output></code></pre>
                 </div>
               </>
             )
@@ -287,19 +315,453 @@ const structuredData = breadcrumbJsonLd([
   </Section>
 
   <script>
+    type ToolPayload = {
+      tool: string;
+      checkedAt: string;
+      durationMs: number;
+      result: any;
+    };
+
+    const toolLabels: Record<string, string> = {
+      "dns-lookup": "DNS Lookup",
+      "dns-propagation": "DNS Propagation",
+      "domain-age": "Domain Age",
+      "rdap-whois": "RDAP WHOIS",
+      "ssl-expiry": "SSL Expiry",
+      "http-header-check": "HTTP Header",
+      "email-auth-check": "Email Auth",
+      "reverse-dns": "Reverse DNS",
+      "ip-asn-lookup": "IP ASN"
+    };
+
+    const recordLabels: Record<string, string> = {
+      a: "A Record",
+      aaaa: "AAAA Record",
+      ns: "NS Record",
+      mx: "MX Record",
+      txt: "TXT Record",
+      caa: "CAA Record",
+      soa: "SOA Record"
+    };
+
+    const recordHints: Record<string, string> = {
+      a: "IPv4 address",
+      aaaa: "IPv6 address",
+      ns: "Nameserver",
+      mx: "Mail server",
+      txt: "Text record",
+      caa: "Certificate authority",
+      soa: "Zone authority"
+    };
+
+    const escapeHtml = (value: unknown) =>
+      String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+
+    const toTitle = (value: string) =>
+      value
+        .replaceAll("-", " ")
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+    const formatDateTime = (value?: string) => {
+      if (!value) return "-";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return new Intl.DateTimeFormat("id-ID", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(date);
+    };
+
+    const flattenTxt = (value: unknown) =>
+      Array.isArray(value)
+        ? value.map((row) => (Array.isArray(row) ? row.join("") : String(row)))
+        : [];
+
+    const asList = (value: unknown) => {
+      if (value === null || value === undefined || value === "") return [];
+      return Array.isArray(value) ? value : [value];
+    };
+
+    const formatValue = (value: unknown): string => {
+      if (value === null || value === undefined || value === "") return "-";
+      if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+        return escapeHtml(value);
+      }
+      if (Array.isArray(value)) {
+        return value.map((item) => formatValue(item)).join(", ");
+      }
+      if (typeof value === "object") {
+        return Object.entries(value)
+          .map(([key, item]) => `${escapeHtml(toTitle(key))}: ${formatValue(item)}`)
+          .join("<br />");
+      }
+      return escapeHtml(String(value));
+    };
+
+    const badge = (label: string, tone: "ok" | "warn" | "neutral" = "neutral") => {
+      const className =
+        tone === "ok"
+          ? "bg-accent text-text-primary [border:var(--border-strong)]"
+          : tone === "warn"
+            ? "bg-[#fff1d6] text-text-primary [border:var(--border-strong)]"
+            : "bg-surface-muted text-text-secondary [border:1.5px_solid_var(--color-border)]";
+      return `<span class="inline-flex w-fit rounded-full px-2.5 py-1 text-[0.78rem] font-black ${className}">${escapeHtml(label)}</span>`;
+    };
+
+    const shell = (title: string, description: string, body: string, tone: "default" | "muted" | "warning" = "default") => {
+      const toneClass =
+        tone === "warning"
+          ? "bg-[#fff7e8]"
+          : tone === "muted"
+            ? "bg-surface-muted"
+            : "bg-background";
+      return `
+        <section class="rounded-card ${toneClass} p-4 [border:var(--border-strong)]">
+          <div class="mb-3 flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h4 class="m-0 text-[1rem] font-black">${escapeHtml(title)}</h4>
+              <p class="m-0 mt-1 text-[0.88rem] font-bold text-text-secondary">${escapeHtml(description)}</p>
+            </div>
+          </div>
+          ${body}
+        </section>
+      `;
+    };
+
+    const valueList = (values: unknown[], empty = "Tidak ada data.") => {
+      if (values.length === 0) {
+        return `<p class="m-0 rounded-card bg-surface p-3 font-bold text-text-secondary [border:1.5px_solid_var(--color-border)]">${escapeHtml(empty)}</p>`;
+      }
+
+      return `<div class="grid gap-2">${values
+        .map(
+          (value) =>
+            `<div class="break-words rounded-card bg-surface p-3 font-mono text-[0.88rem] font-bold leading-[1.6] [border:1.5px_solid_var(--color-border)]">${formatValue(value)}</div>`
+        )
+        .join("")}</div>`;
+    };
+
+    const keyValueGrid = (items: Array<[string, unknown]>) => `
+      <dl class="grid gap-2 md:grid-cols-2">
+        ${items
+          .map(
+            ([key, value]) => `
+              <div class="rounded-card bg-surface p-3 [border:1.5px_solid_var(--color-border)]">
+                <dt class="mb-1 text-[0.78rem] font-black uppercase text-text-secondary">${escapeHtml(key)}</dt>
+                <dd class="m-0 break-words font-black leading-[1.5]">${formatValue(value)}</dd>
+              </div>
+            `
+          )
+          .join("")}
+      </dl>
+    `;
+
+    const fallbackNotice = (external: any) =>
+      external?.fallback
+        ? shell(
+            "Fallback aktif",
+            external.message ?? "Sumber eksternal belum memberi data.",
+            keyValueGrid([
+              ["Target", external.target],
+              ["Error", external.error],
+              ["Source dicoba", asList(external.triedSources).join(", ")]
+            ]),
+            "warning"
+          )
+        : "";
+
+    const renderRecordCard = (title: string, hint: string, lookup: any) => {
+      const values = lookup?.ok ? lookup.data : [];
+      const normalized = title === "TXT Record" ? flattenTxt(values) : asList(values);
+      return shell(
+        title,
+        hint,
+        `${lookup?.ok ? badge("OK", "ok") : badge("Tidak ditemukan", "warn")}
+        <div class="mt-3">${valueList(normalized, lookup?.error ?? "Record ini tidak ditemukan.")}</div>`
+      );
+    };
+
+    const renderDnsLookup = (payload: ToolPayload) => {
+      const result = payload.result;
+      const records = result.records ?? {};
+      const order = ["a", "aaaa", "mx", "txt", "ns", "caa", "soa"];
+      return `
+        ${shell(
+          `DNS Records untuk ${result.domain}`,
+          `Dicek ${formatDateTime(payload.checkedAt)} dalam ${payload.durationMs} ms`,
+          keyValueGrid([
+            ["Domain", result.domain],
+            ["Total record group", order.length]
+          ]),
+          "muted"
+        )}
+        <div class="grid gap-4">
+          ${order.map((key) => renderRecordCard(recordLabels[key], recordHints[key], records[key])).join("")}
+        </div>
+      `;
+    };
+
+    const renderDnsPropagation = (payload: ToolPayload) => {
+      const result = payload.result;
+      return `
+        ${shell(
+          `Propagasi ${result.record} untuk ${result.domain}`,
+          `Dicek dari ${asList(result.resolvers).length} resolver publik dalam ${payload.durationMs} ms`,
+          keyValueGrid([
+            ["Domain", result.domain],
+            ["Record", result.record]
+          ]),
+          "muted"
+        )}
+        <div class="grid gap-4 md:grid-cols-2">
+          ${asList(result.resolvers)
+            .map((resolver: any) =>
+              shell(
+                resolver.name,
+                resolver.server,
+                `${resolver.result?.ok ? badge("OK", "ok") : badge("Gagal", "warn")}
+                <div class="mt-3">${valueList(asList(resolver.result?.data), resolver.result?.error ?? "Tidak ada hasil.")}</div>`
+              )
+            )
+            .join("")}
+        </div>
+      `;
+    };
+
+    const renderDomainAge = (payload: ToolPayload) => {
+      const result = payload.result;
+      return `
+        ${fallbackNotice(result.external)}
+        ${shell(
+          `Umur domain ${result.domain}`,
+          result.source ? `Source: ${result.source}` : `Dicek dalam ${payload.durationMs} ms`,
+          keyValueGrid([
+            ["Registrar", result.registrar],
+            ["Tanggal daftar", result.age?.createdAt ? formatDateTime(result.age.createdAt) : "-"],
+            ["Umur", result.age ? `${result.age.days} hari (${result.age.years} tahun)` : "-"],
+            ["Status", asList(result.status).join(", ") || "-"]
+          ]),
+          "muted"
+        )}
+        ${shell("Events", "Tanggal penting dari data RDAP", valueList(asList(result.events)))}
+      `;
+    };
+
+    const renderRdapWhois = (payload: ToolPayload) => {
+      const result = payload.result;
+      const isIp = result.type === "ip";
+      return `
+        ${fallbackNotice(result.external)}
+        ${shell(
+          isIp ? `RDAP IP ${result.ip}` : `RDAP domain ${result.domain}`,
+          result.source ? `Source: ${result.source}` : `Dicek dalam ${payload.durationMs} ms`,
+          keyValueGrid(
+            isIp
+              ? [
+                  ["Handle", result.handle],
+                  ["Name", result.name],
+                  ["Type", result.networkType],
+                  ["Country", result.country],
+                  ["Range", result.startAddress && result.endAddress ? `${result.startAddress} - ${result.endAddress}` : "-"]
+                ]
+              : [
+                  ["Handle", result.handle],
+                  ["Registrar", result.registrar],
+                  ["Nameserver", asList(result.nameservers).join(", ") || "-"],
+                  ["Status", asList(result.status).join(", ") || "-"]
+                ]
+          ),
+          "muted"
+        )}
+        ${shell("Entities", "Kontak atau organisasi dari data RDAP", valueList(asList(result.entities)))}
+        ${shell("Events", "Tanggal penting dari registry", valueList(asList(result.events)))}
+      `;
+    };
+
+    const renderSslExpiry = (payload: ToolPayload) => {
+      const result = payload.result;
+      return `
+        ${fallbackNotice(result.external)}
+        ${shell(
+          `SSL ${result.hostname}:${result.port}`,
+          `Dicek dalam ${payload.durationMs} ms`,
+          keyValueGrid([
+            ["Issuer", result.issuer?.CN ?? result.issuer?.O ?? "-"],
+            ["Subject", result.subject?.CN ?? "-"],
+            ["Valid from", result.validFrom],
+            ["Valid to", result.validTo],
+            ["Sisa hari", result.daysRemaining === null || result.daysRemaining === undefined ? "-" : `${result.daysRemaining} hari`],
+            ["SAN", result.subjectAltName]
+          ]),
+          "muted"
+        )}
+      `;
+    };
+
+    const renderHttpHeaders = (payload: ToolPayload) => {
+      const result = payload.result;
+      return `
+        ${fallbackNotice(result.external)}
+        ${shell(
+          "HTTP Header",
+          `Redirect count: ${result.redirectCount ?? 0}. Dicek dalam ${payload.durationMs} ms`,
+          keyValueGrid([
+            ["Input", result.input],
+            ["Final URL", result.finalUrl ?? "-"]
+          ]),
+          "muted"
+        )}
+        <div class="grid gap-4">
+          ${asList(result.chain)
+            .map((item: any) =>
+              shell(
+                `${item.status} ${item.url}`,
+                "Response header penting",
+                keyValueGrid([
+                  ["Location", item.headers?.location],
+                  ["Cache-Control", item.headers?.cacheControl],
+                  ["Content-Type", item.headers?.contentType],
+                  ["Server", item.headers?.server],
+                  ["HSTS", item.headers?.strictTransportSecurity],
+                  ["CSP", item.headers?.contentSecurityPolicy],
+                  ["X-Frame-Options", item.headers?.xFrameOptions],
+                  ["X-Content-Type-Options", item.headers?.xContentTypeOptions]
+                ])
+              )
+            )
+            .join("") || shell("Tidak ada response", "Target belum memberi header.", "")}
+        </div>
+      `;
+    };
+
+    const renderEmailAuth = (payload: ToolPayload) => {
+      const result = payload.result;
+      return `
+        ${shell(
+          `Email auth untuk ${result.domain}`,
+          `Selector DKIM: ${result.selector}. Dicek dalam ${payload.durationMs} ms`,
+          keyValueGrid([
+            ["SPF ditemukan", result.spf?.length ?? 0],
+            ["DMARC ditemukan", result.dmarc?.length ?? 0],
+            ["DKIM ditemukan", result.dkim?.length ?? 0]
+          ]),
+          "muted"
+        )}
+        ${shell("SPF", "Sender Policy Framework", valueList(asList(result.spf), "SPF belum ditemukan."))}
+        ${shell("DMARC", "Policy email domain", valueList(asList(result.dmarc), "DMARC belum ditemukan."))}
+        ${shell("DKIM", "Selector yang dicek", valueList(asList(result.dkim), "DKIM tidak ditemukan untuk selector ini."))}
+      `;
+    };
+
+    const renderReverseDns = (payload: ToolPayload) => {
+      const result = payload.result;
+      return shell(
+        `Reverse DNS ${result.ip}`,
+        `Dicek dalam ${payload.durationMs} ms`,
+        `${result.hostnames?.ok ? badge("OK", "ok") : badge("Tidak ditemukan", "warn")}
+        <div class="mt-3">${valueList(asList(result.hostnames?.data), result.hostnames?.error ?? "PTR tidak ditemukan.")}</div>`,
+        "muted"
+      );
+    };
+
+    const renderIpAsn = (payload: ToolPayload) => {
+      const result = payload.result;
+      return `
+        ${fallbackNotice(result.external)}
+        ${shell(
+          `IP ASN ${result.ip}`,
+          result.source ? `Source: ${result.source}` : `Dicek dalam ${payload.durationMs} ms`,
+          keyValueGrid([
+            ["Handle", result.handle],
+            ["Name", result.name],
+            ["Type", result.type],
+            ["Country", result.country],
+            ["Range", result.startAddress && result.endAddress ? `${result.startAddress} - ${result.endAddress}` : "-"]
+          ]),
+          "muted"
+        )}
+        ${shell("Entities", "Organisasi terkait IP", valueList(asList(result.entities)))}
+      `;
+    };
+
+    const renderReadableOutput = (payload: ToolPayload) => {
+      switch (payload.tool) {
+        case "dns-lookup":
+          return renderDnsLookup(payload);
+        case "dns-propagation":
+          return renderDnsPropagation(payload);
+        case "domain-age":
+          return renderDomainAge(payload);
+        case "rdap-whois":
+          return renderRdapWhois(payload);
+        case "ssl-expiry":
+          return renderSslExpiry(payload);
+        case "http-header-check":
+          return renderHttpHeaders(payload);
+        case "email-auth-check":
+          return renderEmailAuth(payload);
+        case "reverse-dns":
+          return renderReverseDns(payload);
+        case "ip-asn-lookup":
+          return renderIpAsn(payload);
+        default:
+          return shell(toolLabels[payload.tool] ?? "Output", `Dicek dalam ${payload.durationMs} ms`, valueList([payload.result]));
+      }
+    };
+
+    function setOutputMode(resultPanel: HTMLElement, mode: "readable" | "json") {
+      const readable = resultPanel.querySelector<HTMLElement>("[data-tool-readable]");
+      const raw = resultPanel.querySelector<HTMLElement>("[data-tool-output]")?.closest("pre");
+      const buttons = resultPanel.querySelectorAll<HTMLButtonElement>("[data-output-mode]");
+
+      readable?.classList.toggle("hidden", mode !== "readable");
+      raw?.classList.toggle("hidden", mode !== "json");
+      buttons.forEach((button) => {
+        const isActive = button.dataset.outputMode === mode;
+        button.setAttribute("aria-pressed", String(isActive));
+        button.className = isActive
+          ? "cursor-pointer rounded-full bg-accent px-3 py-1.5 text-[0.8rem] font-black text-text-primary transition hover:translate-x-px hover:translate-y-px [border:var(--border-strong)]"
+          : "cursor-pointer rounded-full bg-surface-muted px-3 py-1.5 text-[0.8rem] font-black text-text-secondary transition hover:bg-accent-soft hover:text-text-primary [border:1.5px_solid_var(--color-border)]";
+      });
+    }
+
     function initializeToolForm() {
       const form = document.querySelector<HTMLFormElement>("[data-tool-form]");
       if (!form || form.dataset.toolFormReady === "true") return;
 
       const resultPanel = document.querySelector<HTMLElement>("[data-tool-result]");
+      const readableOutput = document.querySelector<HTMLElement>("[data-tool-readable]");
       const output = document.querySelector<HTMLElement>("[data-tool-output]");
+      const summary = document.querySelector<HTMLElement>("[data-tool-summary]");
       const statusText = document.querySelector<HTMLElement>("[data-tool-status]");
       const submitButton = document.querySelector<HTMLButtonElement>("[data-tool-submit]");
+      const copyJsonButton = document.querySelector<HTMLButtonElement>("[data-tool-copy-json]");
+      let latestJson = "";
 
       form.dataset.toolFormReady = "true";
+      resultPanel?.addEventListener("click", (event) => {
+        const button = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-output-mode]");
+        if (!button || !resultPanel.contains(button)) return;
+        setOutputMode(resultPanel, button.dataset.outputMode === "json" ? "json" : "readable");
+      });
+      copyJsonButton?.addEventListener("click", async () => {
+        if (!latestJson) return;
+        await navigator.clipboard?.writeText(latestJson);
+        copyJsonButton.textContent = "Copied";
+        window.setTimeout(() => {
+          copyJsonButton.textContent = "Copy JSON";
+        }, 1400);
+      });
+
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
-        if (!resultPanel || !output || !statusText || !submitButton) return;
+        if (!resultPanel || !readableOutput || !output || !summary || !statusText || !submitButton) return;
 
         const slug = form.getAttribute("data-tool-slug");
         const formData = new FormData(form);
@@ -323,18 +785,24 @@ const structuredData = breadcrumbJsonLd([
             throw new Error(payload.error || "Tool gagal dijalankan.");
           }
 
-          output.textContent = JSON.stringify(payload.data, null, 2);
+          latestJson = JSON.stringify(payload.data, null, 2);
+          output.textContent = latestJson;
+          readableOutput.innerHTML = renderReadableOutput(payload.data);
+          summary.textContent = `${toolLabels[payload.data.tool] ?? "Tool"} untuk ${params.get("target") ?? "target"} selesai dalam ${payload.data.durationMs} ms.`;
           resultPanel.classList.remove("hidden");
+          setOutputMode(resultPanel, "readable");
           statusText.textContent = `Selesai dalam ${payload.data.durationMs} ms.`;
         } catch (error) {
-          output.textContent = JSON.stringify(
-            {
-              error: error instanceof Error ? error.message : "Tool gagal dijalankan."
-            },
+          latestJson = JSON.stringify(
+            { error: error instanceof Error ? error.message : "Tool gagal dijalankan." },
             null,
             2
           );
+          output.textContent = latestJson;
+          readableOutput.innerHTML = shell("Tool gagal", "Cek detail error di bawah.", valueList([latestJson]), "warning");
+          summary.textContent = "Request belum berhasil diproses.";
           resultPanel.classList.remove("hidden");
+          setOutputMode(resultPanel, "readable");
           statusText.textContent = "Gagal. Cek output untuk detailnya.";
         } finally {
           submitButton.disabled = false;
