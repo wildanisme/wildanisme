@@ -162,10 +162,42 @@ function getAge(createdAt?: string) {
   };
 }
 
-function getEntityName(entity: any) {
+function getEntityDetails(entity: any) {
+  const handle = entity?.handle ?? null;
+  const roles = entity?.roles ?? [];
   const vcard = entity?.vcardArray?.[1];
-  const fn = Array.isArray(vcard) ? vcard.find((item) => item?.[0] === "fn") : undefined;
-  return fn?.[3] ?? entity?.handle ?? null;
+
+  if (!Array.isArray(vcard)) {
+    return { handle, roles, name: handle, org: null, email: null, phone: null, address: null, links: entity?.links ?? [] };
+  }
+
+  const findValue = (type: string) => {
+    const item = vcard.find((i) => i?.[0] === type);
+    return item ? item[3] : null;
+  };
+
+  const name = findValue("fn") ?? handle;
+  const org = findValue("org");
+  const email = findValue("email");
+  let phone = findValue("tel");
+  if (typeof phone === "string" && phone.startsWith("tel:")) {
+    phone = phone.substring(4);
+  }
+
+  const adrItem = vcard.find((i) => i?.[0] === "adr");
+  let address = null;
+  if (adrItem && adrItem[3]) {
+    address = Array.isArray(adrItem[3])
+      ? adrItem[3].filter((part) => typeof part === "string" && part.trim() !== "").join(", ")
+      : String(adrItem[3]);
+  }
+
+  return { handle, roles, name, org, email, phone, address, links: entity?.links ?? [] };
+}
+
+function getEntityName(entity: any) {
+  const details = getEntityDetails(entity);
+  return details.name;
 }
 
 async function fetchJson(url: string, timeoutMs = 8000) {
@@ -495,16 +527,44 @@ async function checkRdapWhois(target: string) {
     };
   }
 
-  const rdap = lookup.data;
+  let rdap = lookup.data;
+  let allEntities = rdap.entities?.map((e: any) => getEntityDetails(e)) ?? [];
+
+  // Check if we have a registrant. If not, follow "related" link for referral
+  const hasRegistrant = allEntities.some((e: any) => e.roles.includes("registrant"));
+  if (!hasRegistrant) {
+    const referralLink = rdap.links?.find((l: any) => l.rel === "related" && l.type === "application/rdap+json")?.href;
+    if (referralLink) {
+      const referralLookup = await tryFetchJson(referralLink, 5000);
+      if (referralLookup.ok) {
+        const referralEntities = referralLookup.data.entities?.map((e: any) => getEntityDetails(e)) ?? [];
+        if (referralEntities.length > 0) {
+          allEntities = [...allEntities, ...referralEntities];
+        }
+      }
+    }
+  }
+
+  const registrarEntity = allEntities.find((e: any) => e.roles.includes("registrar"));
+  const registrarUrl =
+    registrarEntity?.links?.find((l: any) => l.rel === "about")?.href ??
+    rdap.links?.find((l: any) => l.rel === "about")?.href ??
+    null;
 
   return {
     type: "domain",
     domain,
     source: lookup.source,
     handle: rdap.handle,
-    registrar: getEntityName(rdap.entities?.find((entity: any) => entity.roles?.includes("registrar"))),
+    registrar: registrarEntity?.name ?? null,
+    registrarUrl,
+    // Extract key roles for summary
+    registrant: allEntities.find((e: any) => e.roles.includes("registrant")),
+    admin: allEntities.find((e: any) => e.roles.includes("admin")),
+    tech: allEntities.find((e: any) => e.roles.includes("technical")),
     nameservers: rdap.nameservers?.map((nameserver: any) => nameserver.ldhName ?? nameserver.unicodeName) ?? [],
     status: rdap.status ?? [],
+    entities: allEntities,
     events: rdap.events ?? []
   };
 }
