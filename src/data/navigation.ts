@@ -13,6 +13,6 @@ export const partnersProducts = [
   { label: "Tools PDF", href: "https://pdf.wildanisme.com" },
   { label: "Aplikasi POS Percetakan", href: "https://pospercetakan.com" },
   { label: "Aplikasi Keuangan Sekolah & Pesantren", href: "https://tatakeu.id" },
+  { label: "Motekar Teknologi Indonesia", href: "https://motekarindo.co.id" },
   { label: "Summit Citra Teknologi", href: "https://summitct.co.id" },
-  { label: "Motekar Teknologi Indonesia", href: "#" },
 ];

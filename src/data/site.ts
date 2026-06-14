@@ -22,6 +22,6 @@ export const site = {
 
 export const proofPoints = [
   { label: "Yang biasa diberesin", value: "Bug bandel, web lemot, deploy yang bikin tangan dingin" },
-  { label: "Role", value: "Maintenance web, Sysadmin/DevOps, SEO teknis" },
+  { label: "Role", value: "Web Development, Sysadmin/DevOps, SEO teknis" },
   { label: "Output", value: "Akar masalah ketemu, fix jalan, catatan enak dibaca" }
 ];
