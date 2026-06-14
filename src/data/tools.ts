@@ -294,12 +294,12 @@ export async function checkEmailAuth(domain: string, selector = "default") {
     slug: "reverse-dns",
     title: "Reverse DNS",
     category: "IP",
-    summary: "Cek PTR hostname dari sebuah IP address.",
+    summary: "Cek PTR hostname, mapping reverse, dan status lookup dari sebuah IP address.",
     description:
       "Tool untuk melihat reverse DNS sebuah IP. Umumnya dipakai untuk audit mail server, server hosting, dan identifikasi IP.",
     bestFor: ["Audit mail server", "Cek identitas IP server", "Debug reputasi email", "Validasi PTR"],
     inputs: ["IPv4 atau IPv6"],
-    checks: ["PTR record via reverse lookup"],
+    checks: ["PTR record", "Hostname mapping", "Reverse lookup"],
     output: ["Hostname PTR", "Status lookup", "Catatan jika tidak ada PTR"],
     nodeRuntime: ["node:dns/promises", "reverse()"],
     astroNote:
