@@ -73,6 +73,11 @@ const formConfigBySlug: Record<string, { label: string; placeholder: string; hel
     label: "IP address",
     placeholder: "1.1.1.1",
     helper: "Masukkan IP publik untuk melihat data RDAP jaringan dan pemilik ASN."
+  },
+  "subdomain-finder": {
+    label: "Domain utama",
+    placeholder: "wildanisme.com",
+    helper: "Masukkan domain utama tanpa http:// untuk mencari subdomain yang terindeks."
   }
 };
 const formConfig = formConfigBySlug[tool.slug] ?? {
@@ -331,7 +336,8 @@ const structuredData = breadcrumbJsonLd([
       "http-header-check": "HTTP Header",
       "email-auth-check": "Email Auth",
       "reverse-dns": "Reverse DNS",
-      "ip-asn-lookup": "IP ASN"
+      "ip-asn-lookup": "IP ASN",
+      "subdomain-finder": "Subdomain Finder"
     };
 
     const recordLabels: Record<string, string> = {
@@ -690,6 +696,56 @@ const structuredData = breadcrumbJsonLd([
       `;
     };
 
+    const renderSubdomainFinder = (payload: ToolPayload) => {
+      const result = payload.result;
+      const hosts = asList(result.hosts);
+
+      return `
+        ${shell(
+          `Subdomain Finder: ${result.domain}`,
+          `Ditemukan ${result.count} host. Sumber: ${result.source ?? "HackerTarget"}`,
+          keyValueGrid([
+            ["Domain", result.domain],
+            ["Total ditemukan", result.count]
+          ]),
+          "muted"
+        )}
+        ${shell(
+          "Host List",
+          "Daftar host dan IP yang terindeks",
+          `
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-left text-[0.88rem]">
+              <thead>
+                <tr class="border-b-2 border-border">
+                  <th class="py-2 pr-4 font-black">Hostname</th>
+                  <th class="py-2 font-black text-text-secondary">IP Address</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y border-border">
+                ${hosts
+                  .map(
+                    (item: any) => `
+                  <tr>
+                    <td class="py-2 pr-4 font-mono font-bold">
+                      <a href="http://${escapeHtml(item.host)}" target="_blank" rel="noopener noreferrer" class="hover:text-accent underline decoration-1 underline-offset-4">
+                        ${escapeHtml(item.host)}
+                      </a>
+                    </td>
+                    <td class="py-2 font-mono text-text-secondary">${escapeHtml(item.ip)}</td>
+                  </tr>
+                `
+                  )
+                  .join("")}
+                ${hosts.length === 0 ? '<tr><td colspan="2" class="py-4 text-center text-text-muted font-bold">Tidak ada subdomain yang ditemukan.</td></tr>' : ""}
+              </tbody>
+            </table>
+          </div>
+          `
+        )}
+      `;
+    };
+
     const renderReadableOutput = (payload: ToolPayload) => {
       switch (payload.tool) {
         case "dns-lookup":
@@ -710,6 +766,8 @@ const structuredData = breadcrumbJsonLd([
           return renderReverseDns(payload);
         case "ip-asn-lookup":
           return renderIpAsn(payload);
+        case "subdomain-finder":
+          return renderSubdomainFinder(payload);
         default:
           return shell(toolLabels[payload.tool] ?? "Output", `Dicek dalam ${payload.durationMs} ms`, valueList([payload.result]));
       }

@@ -320,8 +320,58 @@ async function runTool(slug: string, input: { target: string; record?: string | 
       return checkReverseDns(input.target);
     case "ip-asn-lookup":
       return checkIpAsn(input.target);
+    case "subdomain-finder":
+      return checkSubdomainFinder(input.target);
     default:
       fail("Tool tidak ditemukan.", 404);
+  }
+}
+
+async function checkSubdomainFinder(target: string) {
+  const domain = normalizeDomain(target);
+  const url = `https://api.hackertarget.com/hostsearch/?q=${domain}`;
+
+  try {
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(10000),
+      headers: { "user-agent": "wildanisme-tools/1.0" }
+    });
+
+    if (!response.ok) fail(`API HackerTarget merespons status ${response.status}.`, response.status);
+
+    const text = await response.text();
+    const lines = text.trim().split("\n");
+
+    // Handle common HackerTarget error messages
+    if (text.includes("error check your search parameter")) {
+      fail("Format domain tidak valid untuk HackerTarget.");
+    }
+
+    if (text.includes("API count exceeded")) {
+      fail("Limit harian HackerTarget tercapai (50 query/hari). Coba lagi besok.", 429);
+    }
+
+    if (text.includes("No hosts found")) {
+      return { domain, hosts: [], count: 0 };
+    }
+
+    const hosts = lines
+      .map((line) => {
+        const [host, ip] = line.split(",");
+        if (!host || !ip) return null;
+        return { host, ip };
+      })
+      .filter((item): item is { host: string; ip: string } => item !== null);
+
+    return {
+      domain,
+      hosts,
+      count: hosts.length,
+      source: "HackerTarget"
+    };
+  } catch (error) {
+    if (isSecurityBlock(error)) throw error;
+    fail(error instanceof Error ? error.message : "Gagal mengambil data dari HackerTarget.");
   }
 }
 

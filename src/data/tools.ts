@@ -343,6 +343,35 @@ export async function reverseDns(ip: string) {
       "IP cloud/CDN bisa dipakai banyak tenant.",
       "ASN bukan bukti kepemilikan aplikasi."
     ]
+  },
+  {
+    slug: "subdomain-finder",
+    title: "Subdomain Finder",
+    category: "DNS",
+    summary: "Cari subdomain aktif menggunakan data dari Host Search HackerTarget.",
+    description:
+      "Tool untuk menemukan subdomain yang terindeks dari sebuah domain utama. Menggunakan teknik passive discovery untuk melihat jejak infrastruktur yang pernah terekam di publik.",
+    bestFor: ["Audit attack surface", "Eksplorasi infrastruktur domain", "Mencari staging atau dev env", "Cek subdomain tanpa brute-force"],
+    inputs: ["Domain utama, contoh: google.com"],
+    checks: ["HackerTarget Host Search", "Passive DNS indexing", "Subdomain to IP mapping"],
+    output: ["Daftar subdomain yang ditemukan", "IP address per subdomain", "Total host ditemukan"],
+    nodeRuntime: ["fetch()", "CSV Parsing"],
+    astroNote:
+      "Tool ini menggunakan API publik HackerTarget.",
+    exampleCode: `export async function findSubdomains(domain: string) {
+  const response = await fetch(\`https://api.hackertarget.com/hostsearch/?q=\${domain}\`);
+  const text = await response.text();
+
+  return text.split("\\n").map(line => {
+    const [host, ip] = line.split(",");
+    return { host, ip };
+  });
+}`,
+    limitations: [
+      "Bergantung pada kelengkapan database HackerTarget.",
+      "Limit 50 query per hari untuk IP server.",
+      "Data mungkin memuat subdomain yang sudah tidak aktif (stale)."
+    ]
   }
 ];
 
