@@ -42,4 +42,5 @@ Saya menyusun ulang SEO dengan mengubah bagian Sitemap. Sehingga, pada sitemap m
 
 - Kenaikkan impression 200%, menjadi 77K impression dalam waktu 1 bulan.
 - Sitemap tiap jurnal menampilkan semua URL.
-- Proses Craling oleh Bot Crawler seperti google, bing atau semacamnya lebih terarah.
+- Proses Crawling oleh Bot Crawler seperti google, bing atau semacamnya lebih terarah.
+- Setup grafana, loki dan promotheus untuk Observability agar mudah membaca log.
