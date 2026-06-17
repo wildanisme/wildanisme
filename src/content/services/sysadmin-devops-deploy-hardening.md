@@ -1,6 +1,7 @@
 ---
 title: "Sysadmin/DevOps: Deploy dan Hardening"
 slug: "sysadmin-devops-deploy-hardening"
+category: "SysAdmin/DevOps"
 summary: "Deploy aplikasi tanpa ritual tegang. Server juga dibuat tidak terlalu polos buat diganggu."
 description: "Saya bantu setup deploy, environment, domain, SSL, reverse proxy, basic hardening, backup checklist, dan dokumentasi rollback. Targetnya sederhana: rilis lebih enak, server lebih siap."
 deliverables:

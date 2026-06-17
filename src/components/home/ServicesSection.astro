@@ -21,7 +21,7 @@ const featuredServices = getFeaturedServices(services);
 >
   <div class="grid grid-cols-3 gap-[22px] max-[900px]:grid-cols-1">
     {featuredServices.map((service) => (
-      <Card href={`/services#${service.data.slug}`}>
+      <Card href={`/services/${service.data.slug}`}>
         <div class="grid gap-3 p-[22px]">
           <span class="text-[0.82rem] font-black text-highlight">{service.data.tools.slice(0, 2).join(" + ")}</span>
           <h3 class="m-0">{service.data.title}</h3>

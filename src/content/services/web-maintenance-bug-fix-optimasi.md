@@ -1,6 +1,7 @@
 ---
 title: "Web Development: Maintenance, Bug Fix, Optimasi"
 slug: "web-maintenance-bug-fix-optimasi"
+category: "Web Development"
 summary: "Website mulai rewel? Saya bantu audit, betulin bug, rapikan performa, dan bikin maintenance-nya tidak bikin kening berkerut."
 description: "Untuk website yang sudah jalan tapi mulai berulah: error kecil muncul terus, halaman lambat, layout geser, dependency tua, atau fitur lama yang takut disentuh."
 deliverables:

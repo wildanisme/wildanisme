@@ -1,6 +1,7 @@
 ---
 title: "SEO Teknis"
 slug: "seo-teknis"
+category: "SEO"
 summary: "SEO bukan tabur keyword lalu berharap Google baik hati. Fondasi teknisnya saya rapikan dulu."
 description: "Fokus pada hal yang bisa dikendalikan: title dan description, heading, sitemap, robots.txt, structured data, internal link, indexability, dan performa halaman."
 deliverables:

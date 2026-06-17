@@ -11,10 +11,12 @@ export const GET: APIRoute = async () => {
   const projects = await getCollection("projects", ({ data }) => data.isPublished);
   const posts = await getCollection("blog", ({ data }) => data.isPublished);
   const clients = await getCollection("clients", ({ data }) => data.isPublished);
+  const services = await getCollection("services", ({ data }) => data.isPublished);
   const staticRoutes = ["/", "/services", "/projects", "/projects/personal", "/clients", "/tools", "/blog", "/about", "/contact"];
 
   const routes = [
     ...staticRoutes,
+    ...services.map((service) => `/services/${service.data.slug}`),
     ...projects.map((project) => `/projects/${project.data.slug}`),
     ...clients.map((client) => `/clients/${client.data.slug}`),
     ...tools.map((tool) => `/tools/${tool.slug}`),

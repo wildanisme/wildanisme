@@ -1,0 +1,117 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/shared/Section.astro";
+import Badge from "@components/shared/Badge.astro";
+import Button from "@components/shared/Button.astro";
+import ContentLayout from "@components/blog/ContentLayout.astro";
+import { site } from "@data/site";
+import { breadcrumbJsonLd } from "@lib/structured-data";
+
+export async function getStaticPaths() {
+  const services = await getCollection("services", ({ data }) => data.isPublished);
+
+  return services.map((service) => ({
+    params: { service: service.data.slug },
+    props: { service }
+  }));
+}
+
+const { service } = Astro.props;
+const { Content } = await render(service);
+const serviceUrl = new URL(`/services/${service.data.slug}`, site.url).toString();
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.data.title,
+    description: service.data.description,
+    serviceType: service.data.category,
+    url: serviceUrl,
+    provider: {
+      "@type": "Person",
+      name: site.owner
+    }
+  },
+  breadcrumbJsonLd([
+    { name: "Beranda", url: site.url },
+    { name: "Layanan", url: new URL("/services", site.url).toString() },
+    { name: service.data.title, url: serviceUrl }
+  ])
+];
+---
+
+<BaseLayout
+  title={service.data.title}
+  description={service.data.description}
+  canonical={`/services/${service.data.slug}`}
+  structuredData={structuredData}
+>
+  <article>
+    <header class="container grid items-start gap-8 py-14 pb-8 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.55fr)]">
+      <div class="grid gap-[18px]">
+        <div class="flex flex-wrap gap-2">
+          <Badge tone="accent">{service.data.category}</Badge>
+          {
+            service.data.isFeatured && (
+              <Badge tone="highlight">Fokus utama</Badge>
+            )
+          }
+        </div>
+        <h1 class="m-0 max-w-[880px] break-words text-[3rem] font-black leading-none max-[420px]:text-[2.45rem] md:text-[4.4rem]">
+          {service.data.title}
+        </h1>
+        <p class="m-0 max-w-[760px] break-words text-[1.05rem] leading-[1.7] text-text-secondary">
+          {service.data.description}
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <Button href="/contact">Diskusikan layanan ini</Button>
+          <Button href="/services" variant="secondary">Lihat semua layanan</Button>
+        </div>
+      </div>
+    </header>
+
+    <Section class="pb-6">
+      <div class="grid gap-[22px] lg:grid-cols-3">
+        <section class="rounded-card bg-surface p-5 shadow-brutal [border:var(--border-strong)]">
+          <h2 class="m-0 mb-3 text-[1.2rem] font-black">Yang dikerjakan</h2>
+          <ul class="m-0 grid gap-2 p-0">
+            {service.data.deliverables.map((item) => <li class="list-none leading-[1.6] text-text-secondary">- {item}</li>)}
+          </ul>
+        </section>
+
+        <section class="rounded-card bg-surface p-5 shadow-brutal [border:var(--border-strong)]">
+          <h2 class="m-0 mb-3 text-[1.2rem] font-black">Paling cocok untuk</h2>
+          <ul class="m-0 grid gap-2 p-0">
+            {service.data.idealFor.map((item) => <li class="list-none leading-[1.6] text-text-secondary">- {item}</li>)}
+          </ul>
+        </section>
+
+        <section class="rounded-card bg-accent-soft p-5 shadow-brutal [border:var(--border-strong)]">
+          <h2 class="m-0 mb-3 text-[1.2rem] font-black">Tools dan area teknis</h2>
+          <div class="flex flex-wrap gap-2">
+            {service.data.tools.map((item) => <Badge tone="neutral">{item}</Badge>)}
+          </div>
+        </section>
+      </div>
+    </Section>
+
+    <Section>
+      <div class="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,760px)_minmax(280px,1fr)]">
+        <ContentLayout>
+          <Content />
+        </ContentLayout>
+
+        <aside class="brutal-panel h-fit p-5">
+          <h2 class="m-0 text-[1.35rem] font-black leading-tight">Mau cek apakah ini pas?</h2>
+          <p class="m-0 mt-3 leading-[1.65] text-text-secondary">
+            Kirim URL, gejala, dan targetnya. Saya bantu pilah apakah masuk layanan ini atau lebih cocok ditangani lewat jalur lain.
+          </p>
+          <div class="mt-5 flex flex-wrap gap-3">
+            <Button href="/contact">Kirim konteks</Button>
+          </div>
+        </aside>
+      </div>
+    </Section>
+  </article>
+</BaseLayout>
