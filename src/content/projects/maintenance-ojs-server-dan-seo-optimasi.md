@@ -10,9 +10,9 @@ stack: ["OJS", "Google Search Console", "SEO", "MySQL"]
 year: 2026
 industry: ["Education"]
 gallery:
-  - image: "../../assets/images/projects/maintenance-aplikasi-ojs-server-dan-seo/sebelum.jpeg"
+  - image: "../../assets/images/projects/maintenance-aplikasi-ojs-server-dan-seo/sebelum.jpg"
     caption: "Sebelum optimasi"
-  - image: "../../assets/images/projects/maintenance-aplikasi-ojs-server-dan-seo/setelah.jpeg"
+  - image: "../../assets/images/projects/maintenance-aplikasi-ojs-server-dan-seo/setelah.jpg"
     caption: "Setelah optimasi"
 links:
   - label: "Website jurnal"
