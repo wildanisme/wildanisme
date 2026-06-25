@@ -10,7 +10,7 @@ stack: ["Laravel", "Alpine.js", "MySql"]
 year: 2025
 industry: ["Government"]
 gallery:
-  - image: "../../assets/images/projects/jdih-bogorkab/jdih-homepage.png"
+  - image: "../../assets/images/projects/jdih-bogorkab/jdih-homepage.jpeg"
     caption: "Home Page"
   - image: "../../assets/images/projects/jdih-bogorkab/jdih-homepage-statistik.png"
     caption: "Statistik"
