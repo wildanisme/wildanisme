@@ -25,7 +25,7 @@ Layanan jurnal kampus sering error, dan tidak terindex dengan baik di Google Sea
 
 ## Masalah
 
-![Sebelum Optimasi](../../assets/images/projects/maintenance-aplikasi-ojs-server-dan-seo/sebelum.jpeg)
+![Sebelum Optimasi](../../assets/images/projects/maintenance-aplikasi-ojs-server-dan-seo/sebelum.jpg)
 <p class="text-center font-black text-text-secondary">Sebelum optimasi</p>
 
 
@@ -37,7 +37,7 @@ Saya menyusun ulang SEO dengan mengubah bagian Sitemap. Sehingga, pada sitemap m
 
 ## Hasil
 
-![Setelah Optimasi](../../assets/images/projects/maintenance-aplikasi-ojs-server-dan-seo/setelah.jpeg)
+![Setelah Optimasi](../../assets/images/projects/maintenance-aplikasi-ojs-server-dan-seo/setelah.jpg)
 <p class="text-center font-black text-text-secondary">Setelah optimasi</p>
 
 - Kenaikkan impression 200%, menjadi 77K impression dalam waktu 1 bulan.

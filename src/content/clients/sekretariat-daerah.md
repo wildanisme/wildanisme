@@ -20,5 +20,6 @@ Tenaga Ahli di lingkungan Sekretariat Daerah Kabupaten Bogor.
 ## Yang saya bantu
 
 - Maintenance aplikasi.
-- SEO Optimization
+- Quality Assurance.
+- SEO.
 - Hardening Server
