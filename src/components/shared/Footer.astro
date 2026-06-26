@@ -32,7 +32,7 @@ import EmailLink from "@components/shared/EmailLink.astro";
                 <li class="space-y-2">
                     {
                     partnersProducts.map((item) => (
-                        <a class="block font-black text-gray-950 hover:text-accent-secondary underline transition-colors" href={item.href}>{item.label}</a>
+                        <a class="block font-black text-gray-950 hover:text-accent-secondary underline transition-colors" href={item.href} target="_blank">{item.label}</a>
                     ))
                     }
                 </li>
